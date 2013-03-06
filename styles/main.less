@@ -1,0 +1,97 @@
+////////////////////////////////////////////////////////////////////////////////
+// VARS 
+
+@title-bar-height: 50px;
+@gutter: 1em;
+@header-height: 2em;
+@tab-bar-height: 50px;
+@page-background: #eee;
+@foreground: contrast(@page-background, #666, #ddd);
+
+
+////////////////////////////////////////////////////////////////////////////////
+// MIXINS 
+
+.editor { .posish((@gutter + @header-height), 0, 0, @gutter); .border-radius; }
+
+.posish (@top, @right, @bottom, @left) {
+    position: absolute;
+    top: @top;
+    right: @right;
+    bottom: @bottom;
+    left: @left
+}
+
+.border-radius (@radius: 5px) {
+  border-radius: @radius;
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// GLOBAL RULES 
+
+* {box-sizing: border-box;}
+body { background-color: @page-background; color: @foreground; }
+
+.navbar { box-sizing: content-box; * {box-sizing: content-box;} } 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// main page areas
+
+#title-bar { .posish(0, 0, auto, 0); height: 40px; height: @title-bar-height; }
+
+#not-title-bar { .posish(@title-bar-height, @gutter, @gutter, 0); }
+
+
+////////////////////////////////////////////////////////////////////////////////
+// panels
+
+#style-editor-panel { .posish(0, 50%, 50%, 0); }
+
+#style-editor { .editor; }
+
+#css-output-panel { .posish(0, 0, 50%, 50%); }
+
+#css-output { .editor; }
+
+#view-panel { .posish(50%, 0, 0, 0); }
+
+#view-tabs { .posish(@gutter, 0, auto, @gutter); }
+
+#view-tab-container { .posish(@tab-bar-height, 0, 0, @gutter); }
+
+#html-editor-panel, #result-panel { .posish(0,0,0,0); }
+
+#result-panel { border: 1px solid @foreground; }
+
+#html-editor { .posish(0,0,0,0) }
+
+#result-panel iframe { width: 100%; height: 100%; border-style: none; margin: 0; 
+    padding: 0; overflow: hidden;}
+
+h2.panel-header { color: @foreground; font-size: 1em; .posish(@gutter, 0, auto, @gutter);
+    margin:0; padding:0; line-height: 1em; font-weight: normal; }
+
+.navbar .navbar-inner { padding-left: @gutter; }
+
+.slogan { float: left; padding-top: 12px; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
