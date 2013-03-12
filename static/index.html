@@ -3,15 +3,28 @@
     <title>Lesster</title>
     
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css" type="text/css" />
-    <link rel="stylesheet/less" href="styles/main.less" type="text/css" />
+    <link rel="stylesheet/less" href="/static/styles/main.less" type="text/css" />
     
     <div id="title-bar">
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <a class="brand" href="#">Lesster</a>
-                <p class="slogan">Realtime <a href="http://lesscss.org/" target="_new">LESS</a> 
-                    sandbox</p>
+                <p class="slogan">Realtime
+                    <a href="http://lesscss.org/" target="_new">LESS</a> sandbox</p>
+                <form id="logout" class="navbar-form pull-right logged-in" action="/logout" method="post">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+                <form id="login-form" class="navbar-form pull-right logged-out" action="/login">
+                    <input name="username" type="text" class="span2" placeholder="username">
+                    <input name="password" type="password" class="span2" placeholder="password">
+                    <button type="submit" class="btn">Log in</button>
+                </form>
+                <form id="login-github" class="navbar-form pull-right logged-out">
+                    <button type="submit" class="btn">GH</button>
+                </form>
+                <form id="login-github" class="navbar-form pull-right logged-out">
+                    <button type="submit" class="btn">TWT</button>
+                </form>
             </div>
         </div>
     </div>
@@ -36,7 +49,7 @@
             
             <div id="view-tab-container" class="tab-content">
                 <div class="tab-pane active"  id="result-panel">
-                    <iframe src="result.html"></iframe>
+                    <iframe src="/static/result.html"></iframe>
                 </div>
                 <div class="tab-pane" id="html-editor-panel">
                     <div id="html-editor"></div>
@@ -53,7 +66,9 @@
     <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min.js"></script>-->
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
     <script src="//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" src="scripts/fess.js"></script>  
+    <script type="text/javascript" src="/static/extern/notifier.js"></script>  
+    <script type="text/javascript" src="/static/scripts/lesster.js"></script>  
+    <script type="text/javascript" src="/static/scripts/login.js"></script>  
     
 <script type="text/plain" id="initial-less">@color: steelblue;
 body { background-color: lighten(@color, 45%); color: @color;}
