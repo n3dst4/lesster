@@ -38,7 +38,7 @@ function refreshUserDetails() {
     });
 }
 
-window.lesster = window.lesster ||{};
+window.lesster = window.lesster || {};
 window.lesster.refreshUserDetails = refreshUserDetails;
 
 // end of module
