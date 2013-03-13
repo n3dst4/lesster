@@ -11,7 +11,9 @@ var express = require('express')
     , http = require('http')
     , path = require('path')
     , passport = require("passport")
-    , LocalStrategy = require('passport-local').Strategy;
+    , LocalStrategy = require('passport-local').Strategy
+    , TwitterStrategy = require("passport-twitter").Strategy
+    , config = require("./config");
 
 passport.use(new LocalStrategy(
     function(username, password, returnUser) {
@@ -21,36 +23,50 @@ passport.use(new LocalStrategy(
     }
 ));
 
+passport.use(new TwitterStrategy({
+        consumerKey: config.twitterConsumerKey,
+        consumerSecret: config.twitterConsumerSecret,
+        callbackURL: config.twitterCallbackUrl
+    },
+    function(token, tokenSecret, profile, done) {
+        // we've got twitter auth
+        db.getTwitterUser(profile, done);
+    }
+));
+
+
 passport.serializeUser(function(user, done) {
     console.log("serialize " + user);
-    done(null, user.username);
+    done(null, user._id);
 });
 
-passport.deserializeUser(function(username, done) {
-    console.log("deserialize " + username);
-    db.getUserByUsername(username, done);
+passport.deserializeUser(function(id, done) {
+    console.log("deserialize " + id);
+    db.getUserById(id, function (err, user) {
+        console.log("getUserById for user id " + id + " returned " + user + " with error " + err);
+        done(err, user);
+    });
 });
 
 
 var app = express();
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  
-  //app.use(express.session({ secret: 'wn85v7tgnwo8vtgbowv8g' }));
-  app.use(express.cookieParser('some secret'));
-  app.use(express.cookieSession({secret: 'wn85v7tgnwo8vtgbowv8g'}));
-  app.use(passport.initialize());
-  app.use(passport.session());
-  
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
+    app.set('port', process.env.PORT || 3000);
+    app.set('views', __dirname + '/views');
+    app.set('view engine', 'jade');
+    app.use(express.favicon());
+    app.use(express.logger('dev'));
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    
+    app.use(express.cookieParser('some secret'));
+    app.use(express.cookieSession({secret: 'wn85v7tgnwo8vtgbowv8g'}));
+    app.use(passport.initialize());
+    app.use(passport.session());
+    
+    app.use(app.router);
+    app.use(express.static(path.join(__dirname, 'public')));
 });
 
 app.configure('development', function(){
@@ -65,6 +81,14 @@ app.get('/', function(req, res) {
     res.sendfile("static/index.html");
 });
 
+app.get('/twitter-login-succeeded', function(req, res) {
+    res.sendfile("static/twitter-login-succeeded.html");
+});
+
+app.get('/twitter-login-failed', function(req, res) {
+    res.sendfile("static/twitter-login-failed.html");
+});
+
 // static files
 app.get(/\/static\/(.*)/, function(req, res) {
     res.sendfile("static/" + req.params[0]);
@@ -72,7 +96,7 @@ app.get(/\/static\/(.*)/, function(req, res) {
 
 // perform login
 app.post('/login', passport.authenticate('local'), function(req, res) {
-    res.send("success")
+    res.send(req.user);
 });
 
 // log out
@@ -86,6 +110,20 @@ app.get('/userdetails', function (req, res) {
     if ( ! req.user) res.send(401);
     else res.send(req.user);
 });
+
+// Redirect the user to Twitter for authentication.  When complete, Twitter
+// will redirect the user back to the application at
+//   /auth/twitter/callback
+app.get('/twitter-login', passport.authenticate('twitter'));
+
+// Twitter will redirect the user to this URL after approval.  Finish the
+// authentication process by attempting to obtain an access token.  If
+// access was granted, the user will be logged in.  Otherwise,
+// authentication has failed.
+app.get('/twitter-login-callback', 
+    passport.authenticate('twitter', { successRedirect: '/twitter-login-succeeded',
+                                       failureRedirect: '/twitter-login-failed' })
+);
 
 
 console.log("About to launch listener on port " + process.env.PORT + " " + app.get('port'));

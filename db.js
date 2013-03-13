@@ -29,8 +29,30 @@ exports.getUserByUsername = function (username, done) {
     else users.findOne({username: username}, done);
 };
 
+exports.getUserById = function (id, done) {
+    users.findOne({_id: new BSON.ObjectID(id)}, function (err, user) {
+        console.log("findOne callback!")
+        done(err, user);
+    });
+};
+
 exports.checkUserPassword = function (user, password) {
     return user.password === password;
+};
+
+exports.getTwitterUser = function (twitterProfile, done) {
+    users.findOne({twitterId: twitterProfile.id}, function (err, user) {
+        if (err || ! user) {
+            var newUser = { twitterId: twitterProfile.id } ;
+            users.insert(newUser, function (err) {
+                if (!err) exports.getTwitterUser(twitterProfile, done);
+                else done("unable to create user", false);
+            });
+        }
+        else {
+            done(null, user);
+        }
+    });
 };
 
 
