@@ -9,25 +9,29 @@
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <a class="brand" href="#">Lesster</a>
+                
                 <p class="slogan pull-left">Realtime
                     <a href="http://lesscss.org/" target="_new">LESS</a> sandbox
                 </p>
+                
                 <form id="logout-form" class="navbar-form pull-right logged-in" action="/logout" method="post">
                     <button type="submit" class="btn btn-danger">Logout</button>
                 </form>
+                
                 <p class="slogan pull-right logged-in">
                     Logged in as <span id="username">Anonymous</span>
                 </p>
+                
                 <form id="password-login-form" class="navbar-form pull-right logged-out" action="/login">
                     <input name="username" type="text" class="span2" placeholder="username">
                     <input name="password" type="password" class="span2" placeholder="password">
                     <button type="submit" class="btn">Log in</button>
                 </form>
-                <!--
-                <form id="login-github" class="navbar-form pull-right logged-out">
-                    <button type="submit" class="btn">GH</button>
+                
+                <form id="github-login-form" class="navbar-form pull-right logged-out">
+                    <button type="submit" class="btn">Log in with GitHub</button>
                 </form>
-                -->
+                
                 <form id="twitter-login-form" class="navbar-form pull-right logged-out" 
                         action="/twitter-login" method="GET">
                     <button type="submit" class="btn">Log in with Twitter</button>

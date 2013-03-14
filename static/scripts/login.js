@@ -6,7 +6,7 @@ var passwordForm = $("#password-login-form");
 var twitterForm = $("#twitter-login-form");
 var logoutForm = $("#logout-form");
 var loginUrl = "/login";
-var currentUser = null;
+var currentUser;
 
 
 // hijack the password form
@@ -63,7 +63,7 @@ function displayUser(user) {
         if (currentUser !== user._id && currentUser !== undefined) {
             Notifier.success(null, "You are now logged in");
         }
-        
+        $("#username").html(renderUser(user));
         currentUser = user._id;
     }
     else {
@@ -72,6 +72,23 @@ function displayUser(user) {
         if (currentUser !== undefined) Notifier.warning(null, "You are now logged out");
         currentUser = null;
     }
+}
+
+
+function renderUser(user) {
+    if (user.username) return renderFullUser(user);
+    else if (user.twitterId) return renderTwitterUser(user);
+    else return "";
+}
+
+function renderTwitterUser (user) {
+    return "<a target=\"_new\" href='http://twitter.com/" + user.twitterUsername + "'>@" + 
+        user.twitterUsername + "</a> (Twitter)";
+}
+
+
+function renderFullUser (user) {
+    return user.username;
 }
 
 
