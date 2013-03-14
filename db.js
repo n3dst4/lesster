@@ -10,12 +10,14 @@ var MongoClient = mongo.MongoClient,
     
 var users;
 
+// this is the real one!!
 //var dbUrl = "mongodb://lesster-dev:lesster-dev@linus.mongohq.com:10080/lesster-dev";
+
+// this is the old one off my fake rest service
 var dbUrl = "mongodb://lesster-dev:lesster-dev@alex.mongohq.com:10004/fake-rest-service";
 
 MongoClient.connect(dbUrl, function (err, client){
     if (err) {
-        console.log(err);
         throw err;
     }
     exports.client = client;
@@ -43,13 +45,22 @@ exports.checkUserPassword = function (user, password) {
 exports.getTwitterUser = function (twitterProfile, done) {
     users.findOne({twitterId: twitterProfile.id}, function (err, user) {
         if (err || ! user) {
-            var newUser = { twitterId: twitterProfile.id } ;
+            var newUser = { twitterId: twitterProfile.id, twitterUsername: twitterProfile.username } ;
             users.insert(newUser, function (err) {
                 if (!err) exports.getTwitterUser(twitterProfile, done);
                 else done("unable to create user", false);
             });
         }
         else {
+            if (user.twitterUsername !== twitterProfile.username) {
+                user.twitterUsername = twitterProfile.username;
+                console.log("Updating user's twitterUsername, _id is " + user._id);
+                users.update(
+                    {_id: user._id}, 
+                    { "$set": {twitterUsername: twitterProfile.username}},
+                    {w: 0}
+                );
+            }
             done(null, user);
         }
     });
