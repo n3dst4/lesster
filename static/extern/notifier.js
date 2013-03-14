@@ -31,7 +31,7 @@ var Notifier = (function() {
             position: "fixed",
             zIndex: 99999,
             right: "12px",
-            top: "12px"
+            top: "44px"
         },
         /* individual notification box styles */
         box_styles: {
