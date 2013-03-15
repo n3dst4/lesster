@@ -22,13 +22,13 @@
                     Logged in as <span id="username">Anonymous</span>
                 </p>
                 
-                <form id="password-login-form" class="navbar-form pull-right logged-out" action="/login">
+                <form id="password-login-form" class="navbar-form pull-right logged-out" action="/login" method="post">
                     <input name="username" type="text" class="span2" placeholder="username">
                     <input name="password" type="password" class="span2" placeholder="password">
                     <button type="submit" class="btn">Log in</button>
                 </form>
                 
-                <form id="github-login-form" class="navbar-form pull-right logged-out"
+                <form id="github-login-form" class="navbar-form pull-right logged-out oauth"
                         action="/github-login" method="GET">
                     <button type="submit" class="btn">
                         <img src="/static/images/octocat_24.png" alt=""/>
@@ -36,7 +36,7 @@
                 </button>
                 </form>
                 
-                <form id="twitter-login-form" class="navbar-form pull-right logged-out" 
+                <form id="twitter-login-form" class="navbar-form pull-right logged-out oauth" 
                         action="/twitter-login" method="GET">
                     <button type="submit" class="btn">
                         <img src="/static/images/twitter_24.png" alt=""/>

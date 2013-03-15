@@ -2,60 +2,77 @@
 "use strict";
 $(function(){
 
-var passwordForm = $("#password-login-form");
-var twitterForm = $("#twitter-login-form");
-var gitHubForm = $("#github-login-form");
-var logoutForm = $("#logout-form");
-var loginUrl = "/login";
 var currentUser;
 
+////////////////////////////////////////////////////////////////////////////////
+// jQuery miniplugins
 
-// hijack the password form
-passwordForm.on("submit", function() {
-    $.post( passwordForm.attr("action"), passwordForm.serialize()).done(function(data, textStatus, jqXHR){
-        
+/*
+ * Hijack a form so that it ajaxes its payload. 
+ */
+$.fn.hijackForm = function (done, fail, always) {
+    var self = this,
+        method = this.attr("method"),
+        action = this.attr("action");
+    this.on("submit", function() {
+        $.ajax(action, {
+            method: method,
+            data: self.serialize()
+        }).done(done).fail(fail).always(always);
+        return false;
+    });    
+};
+
+
+/*
+ * Hijack a simple "log in with" form so it pops up in a new window. Assumed
+ * that the plumbing is there to make said window do something clever when
+ * oauth returns
+ */
+$.fn.hijackOAuthForm = function () {
+    var self = this;
+    self.on("submit", function (ev) {
+        window.open(
+            $(this).attr("action"), 
+            "oauth-window",
+            "width=1024,height=480,menubar=no,toolbar=no,dependent=yes,dialog=yes"
+        );
+        return false;
+    });    
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// onload stuff
+
+// hijack the password login form
+$("#password-login-form").hijackForm(
+    function(data, textStatus, jqXHR){
         displayUser(data);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
+    },
+    function (jqXHR, textStatus, errorThrown) {
         Notifier.error(
             (jqXHR.status === 401)? 
                 "Username or password incorrect" : 
                 "Could not contact login server", 
             "Login failed");
-    });
-    return false;
-});
-
-
-// hijack the twitter form
-twitterForm.on("submit", function () {
-    var windowObjectReference = window.open(
-        "/twitter-login", 
-        "twitter-login",
-        "width=1024,height=480,menubar=no,toolbar=no,dependent=yes,dialog=yes"
-    );
-    return false;
-});
-
-// hijack the twitter form
-gitHubForm.on("submit", function () {
-    var windowObjectReference = window.open(
-        "/github-login", 
-        "github-login",
-        "width=1024,height=480,menubar=no,toolbar=no,dependent=yes,dialog=yes"
-    );
-    return false;
-});
-
+    },
+    null
+    
+);
 
 // hijack the logout form
-logoutForm.on("submit", function(event) {
-    $.post( logoutForm.attr("action"), logoutForm.serialize()).always(function () {
-        refreshUserDetails();
-    });
-    return false;
-});
+$("#logout-form").hijackForm(null, null, refreshUserDetails);
 
+// hijack any and all oath forms (we don't need to name them all here, they all
+// work the same)
+$("form.oauth").hijackOAuthForm();
 
+// do this once onload
+refreshUserDetails();
+
+////////////////////////////////////////////////////////////////////////////////
+// login plumbing
 
 function refreshUserDetails() {
     $.get("/userdetails").done(function (data, textStatus, jqXHR) {
@@ -110,9 +127,7 @@ function renderFullUser (user) {
 }
 
 
-refreshUserDetails();
-
-
+// make refreshUserDetails globally available
 window.lesster = window.lesster || {};
 window.lesster.refreshUserDetails = refreshUserDetails;
 
