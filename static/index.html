@@ -28,13 +28,20 @@
                     <button type="submit" class="btn">Log in</button>
                 </form>
                 
-                <form id="github-login-form" class="navbar-form pull-right logged-out">
-                    <button type="submit" class="btn">Log in with GitHub</button>
+                <form id="github-login-form" class="navbar-form pull-right logged-out"
+                        action="/github-login" method="GET">
+                    <button type="submit" class="btn">
+                        <img src="/static/images/octocat_24.png" alt=""/>
+                        Log in with GitHub
+                </button>
                 </form>
                 
                 <form id="twitter-login-form" class="navbar-form pull-right logged-out" 
                         action="/twitter-login" method="GET">
-                    <button type="submit" class="btn">Log in with Twitter</button>
+                    <button type="submit" class="btn">
+                        <img src="/static/images/twitter_24.png" alt=""/>
+                        Log in with Twitter                            
+                    </button>
                 </form>
             </div>
         </div>

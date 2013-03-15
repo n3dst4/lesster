@@ -66,8 +66,49 @@ exports.getTwitterUser = function (twitterProfile, done) {
     });
 };
 
-
-
+/**
+ * profile is the oauth profile object (as returned by passport-github and
+ * passport-twitter at the very least, not sure about others).
+ * 
+ * source is the name of the source, e.g. "twitter" or "gitHub". This should be
+ * camelcase with lowercase first letter.
+ * 
+ * done is the callback to feed the retrieved user into.
+ */
+exports.getUserFromOAuthProfile = function (profile, source, done) {
+    var idKey = source + "Id";
+    var nameKey = source + "Username";
+    var searchCriteria = {};
+    searchCriteria[idKey] = profile.id;
+    users.findOne(searchCriteria, function (err, user) {
+        if (user) {
+            if (user[nameKey] !== profile.username) {
+                user[nameKey] = profile.username;
+                console.log("Updating user's " + nameKey + ", _id is " + user._id);
+                var newVals = {};
+                newVals[nameKey] = profile.username;
+                users.update(
+                    {_id: user._id}, 
+                    { "$set": newVals},
+                    {w: 0}
+                );
+            }
+            done(null, user);
+        }
+        else if (!err) {
+            var newUser = {};
+            newUser[idKey] = profile.id;
+            newUser[nameKey] = profile.username;
+            users.insert(newUser, function (err) {
+                if (!err) exports.getUserFromOAuthProfile(profile, source, done);
+                else done("unable to create user", false);
+            });
+        }
+        else { 
+            done(err, false);
+        }
+    });
+};
 
 
 

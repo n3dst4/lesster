@@ -13,6 +13,7 @@ var express = require('express')
     , passport = require("passport")
     , LocalStrategy = require('passport-local').Strategy
     , TwitterStrategy = require("passport-twitter").Strategy
+    , GitHubStrategy = require("passport-github").Strategy
     , config = require("./config");
 
 passport.use(new LocalStrategy(
@@ -29,9 +30,18 @@ passport.use(new TwitterStrategy({
         callbackURL: config.twitterCallbackUrl
     },
     function(token, tokenSecret, profile, done) {
-        // we've got twitter auth
-        db.getTwitterUser(profile, done);
+        db.getUserFromOAuthProfile(profile, "twitter", done);
     }
+));
+
+passport.use(new GitHubStrategy({
+    clientID: config.gitHubClientId,
+    clientSecret: config.gitHubClientSecret,
+    callbackURL: config.gitHubCallbackUrl
+  },
+  function(accessToken, refreshToken, profile, done) {
+    db.getUserFromOAuthProfile(profile, "gitHub", done);
+  }
 ));
 
 
@@ -81,12 +91,12 @@ app.get('/', function(req, res) {
     res.sendfile("static/index.html");
 });
 
-app.get('/twitter-login-succeeded', function(req, res) {
-    res.sendfile("static/twitter-login-succeeded.html");
+app.get('/oauth-login-succeeded', function(req, res) {
+    res.sendfile("static/oauth-login-succeeded.html");
 });
 
-app.get('/twitter-login-failed', function(req, res) {
-    res.sendfile("static/twitter-login-failed.html");
+app.get('/oauth-login-failed', function(req, res) {
+    res.sendfile("static/oauth-login-failed.html");
 });
 
 // static files
@@ -112,17 +122,29 @@ app.get('/userdetails', function (req, res) {
 });
 
 // Redirect the user to Twitter for authentication.  When complete, Twitter
-// will redirect the user back to the application at
-//   /auth/twitter/callback
+// will redirect the user back to the application
 app.get('/twitter-login', passport.authenticate('twitter'));
+
+// Redirect the user to GitHub for authentication.  When complete, GitHub
+// will redirect the user back to the application
+app.get('/github-login', passport.authenticate('github'));
 
 // Twitter will redirect the user to this URL after approval.  Finish the
 // authentication process by attempting to obtain an access token.  If
 // access was granted, the user will be logged in.  Otherwise,
 // authentication has failed.
 app.get('/twitter-login-callback', 
-    passport.authenticate('twitter', { successRedirect: '/twitter-login-succeeded',
-                                       failureRedirect: '/twitter-login-failed' })
+    passport.authenticate('twitter', { successRedirect: '/oauth-login-succeeded',
+                                       failureRedirect: '/oauth-login-failed' })
+);
+
+// GitHub will redirect the user to this URL after approval.  Finish the
+// authentication process by attempting to obtain an access token.  If
+// access was granted, the user will be logged in.  Otherwise,
+// authentication has failed.
+app.get('/github-login-callback', 
+    passport.authenticate('github', { successRedirect: '/oauth-login-succeeded',
+                                       failureRedirect: '/oauth-login-failed' })
 );
 
 
