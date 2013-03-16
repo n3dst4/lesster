@@ -88,7 +88,7 @@ console.log("About to set up routes");
 
 // main page (static view)
 app.get('/', function(req, res) {
-    res.sendfile("static/index.html");
+    res.sendfile("static/pages/index.html");
 });
 
 app.get('/oauth-login-succeeded', function(req, res) {
