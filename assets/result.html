@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+    <head>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        
+        <script type=text/javascript>
+            (function(global){
+                var body, styleEl;
+
+                $(function(){
+                    body = $("body");
+                    styleEl = $("#injected-styles");
+                });
+                
+                function setBody(html) {
+                    body.html(html);
+                }
+                
+                function setStyle(css) {
+                    styleEl.text(css);
+                }
+                
+                global.setBody = setBody;
+                global.setStyle = setStyle;
+            }(this));
+            
+        </script>
+        
+        <style type="text/css" id="injected-styles"></style>
+        
+    </head>
+    <body></body>
+    
+    
+</html>
