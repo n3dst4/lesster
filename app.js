@@ -64,7 +64,7 @@ var app = express();
 app.configure(function(){
     app.set('port', process.env.PORT || 3000);
     app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
+    app.set('view engine', 'hbs');
     app.use(express.favicon());
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
@@ -147,6 +147,10 @@ app.get('/github-login-callback',
                                        failureRedirect: '/oauth-login-failed' })
 );
 
+
+app.get("/account", function (req, res) {
+    res.render("account", {user: req.user});
+});
 
 console.log("About to launch listener on port " + process.env.PORT + " " + app.get('port'));
 http.createServer(app).listen(app.get('port'), function(){
