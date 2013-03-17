@@ -105,20 +105,22 @@ function displayUser(user) {
 
 
 function renderUser(user) {
-    if (user.username) return renderFullUser(user);
-    else if (user.twitterId) return renderTwitterUser(user);
-    else if (user.gitHubId) return renderGitHubUser(user);
-    else return "";
+    var username = user.username || user.twitterUsername || user.gitHubUsername;
+    
+    var username = (user.username ? renderFullUser :
+        user.twitterId ? renderTwitterUser :
+        user.gitHubId ? renderGitHubUser :
+        $.noop)(user)
+
+    return "<a href='/account'>" + username + "</a>";
 }
 
 function renderTwitterUser (user) {
-    return "<a target=\"_new\" href='http://twitter.com/" + user.twitterUsername + "'>@" + 
-        user.twitterUsername + "</a> (Twitter)";
+    return "@" + user.twitterUsername + " (Twitter)";
 }
 
 function renderGitHubUser (user) {
-    return "<a target=\"_new\" href='http://github.com/" + user.gitHubUsername + "'>@" + 
-        user.gitHubUsername + "</a> (GitHub)";
+    return user.gitHubUsername + " (GitHub)";
 }
 
 

@@ -1,48 +1,14 @@
-!!! 5
-html
-    title Your account
-    link(href='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css', rel='stylesheet')
-    link(rel='stylesheet', href='/static/styles/main.css', type='text/css')
-    #title-bar
-        .navbar.navbar-fixed-top
-            .navbar-inner
-                a.brand(href='#') Lesster
-                p.slogan.pull-left
-                    | Realtime
-                    a(href='http://lesscss.org/', target='_new') LESS
-                    | sandbox
-                form#logout-form.navbar-form.pull-right.logged-in(action='/logout', method='post')
-                    button.btn.btn-danger(type='submit') Logout
-                p.slogan.pull-right.logged-in
-                    | Logged in as 
-                    span#username Anonymous
-                form#password-login-form.navbar-form.pull-right.logged-out(action='/login', method='post')
-                    input.span2(name='username', type='text', placeholder='username')
-                    input.span2(name='password', type='password', placeholder='password')
-                    button.btn(type='submit') Log in
-                form#github-login-form.navbar-form.pull-right.logged-out.oauth(action='/github-login', method='GET')
-                    button.btn(type='submit')
-                        img(src='/static/images/octocat_24.png', alt='')
-                        | Log in with GitHub
-                form#twitter-login-form.navbar-form.pull-right.logged-out.oauth(action='/twitter-login', method='GET')
-                    button.btn(type='submit')
-                        img(src='/static/images/twitter_24.png', alt='')
-                        | Log in with Twitter
-    #not-title-bar.
-        _id : {{user._id}}
-        br
-        twitterId : {{user.twitterId}}
-        br
-        twitterUsername : {{user.twitterUsername}}
-        br
-        gitHubId : {{user.gitHubId}}
-        br
-        gitHubUsername : {{user.gitHubUsername}}
-        br
-    script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js')
-    script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/less.js/1.3.3/less.min.js')
-    script(src='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js')
-    script(src='//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js', type='text/javascript', charset='utf-8')
-    script(type='text/javascript', src='/static/extern/notifier.js')
-    script(type='text/javascript', src='/static/scripts/lesster.js')
-    script(type='text/javascript', src='/static/scripts/login.js')
+extends base
+
+block title Your account
+
+block body
+    | _id : {{user._id}}
+    br
+    | twitterId : {{user.twitterId}}
+    br
+    | twitterUsername : {{user.twitterUsername}}
+    br
+    | gitHubId : {{user.gitHubId}}
+    br
+    | gitHubUsername : {{user.gitHubUsername}}

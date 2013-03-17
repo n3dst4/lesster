@@ -1,8 +1,10 @@
 !!! 5
 html
-    title Lesster
-    link(href='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css', rel='stylesheet')
-    link(rel='stylesheet', href='/static/styles/main.css', type='text/css')
+    title 
+        block title Lesster
+    block stylesheets
+        link(href='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css', rel='stylesheet')
+        link(rel='stylesheet', href='/static/styles/main.css', type='text/css')
     #title-bar
         .navbar.navbar-fixed-top
             .navbar-inner
@@ -29,30 +31,16 @@ html
                         img(src='/static/images/twitter_24.png', alt='')
                         | Log in with Twitter
     #not-title-bar
-        #style-editor-panel
-            h2.panel-header LESS
-            #style-editor
-        #css-output-panel
-            h2.panel-header CSS output (read-only)
-            #css-output
-        #view-panel
-            ul#view-tabs.nav.nav-tabs
-                li.active
-                    a(href='#result-panel', data-toggle='tab') Result
-                li
-                    a(href='#html-editor-panel', data-toggle='tab') HTML
-            #view-tab-container.tab-content
-                #result-panel.tab-pane.active
-                    iframe(src='/static/result.html')
-                #html-editor-panel.tab-pane
-                    #html-editor
-    script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js')
-    script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/less.js/1.3.3/less.min.js')
-    script(src='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js')
-    script(src='//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js', type='text/javascript', charset='utf-8')
-    script(type='text/javascript', src='/static/extern/notifier.js')
+        block body
+    
+    block scripts
+        script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js')
+        script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/less.js/1.3.3/less.min.js')
+        script(src='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js')
+        script(src='//d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js', type='text/javascript', charset='utf-8')
+        script(type='text/javascript', src='/static/extern/notifier.js')
+        script(type='text/javascript', src='/static/scripts/login.js')
     script(type='text/javascript', src='/static/scripts/lesster.js')
-    script(type='text/javascript', src='/static/scripts/login.js')
     script(type='text/javascript')
         function poot () { alert("poot"); }
     script#initial-less(type='text/plain').
