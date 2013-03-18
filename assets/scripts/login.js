@@ -1,6 +1,6 @@
 /*globals less:false, ace:false, $:false, Notifier:false */
 "use strict";
-$(function(){
+(function(){
 
 var currentUser;
 
@@ -44,29 +44,30 @@ $.fn.hijackOAuthForm = function () {
 
 ////////////////////////////////////////////////////////////////////////////////
 // onload stuff
-
-// hijack the password login form
-$("#password-login-form").hijackForm(
-    function(data, textStatus, jqXHR){
-        displayUser(data);
-    },
-    function (jqXHR, textStatus, errorThrown) {
-        Notifier.error(
-            (jqXHR.status === 401)? 
-                "Username or password incorrect" : 
-                "Could not contact login server", 
-            "Login failed");
-    },
-    null
+$(function(){
+    // hijack the password login form
+    $("#password-login-form").hijackForm(
+        function(data, textStatus, jqXHR){
+            displayUser(data);
+        },
+        function (jqXHR, textStatus, errorThrown) {
+            Notifier.error(
+                (jqXHR.status === 401)? 
+                    "Username or password incorrect" : 
+                    "Could not contact login server", 
+                "Login failed");
+        },
+        null
+        
+    );
     
-);
-
-// hijack the logout form
-$("#logout-form").hijackForm(null, null, refreshUserDetails);
-
-// hijack any and all oath forms (we don't need to name them all here, they all
-// work the same)
-$("form.oauth").hijackOAuthForm();
+    // hijack the logout form
+    $("#logout-form").hijackForm(null, null, refreshUserDetails);
+    
+    // hijack any and all oath forms (we don't need to name them all here, they all
+    // work the same)
+    $("form.oauth").hijackOAuthForm();
+});
 
 // do this once onload
 refreshUserDetails();
@@ -86,21 +87,23 @@ function refreshUserDetails() {
 
 
 function displayUser(user) {
-    if (user) {
-        $(".logged-out").hide();
-        $(".logged-in").show();      
-        if (currentUser !== user._id && currentUser !== undefined) {
-            Notifier.success(null, "You are now logged in");
+    $(function(){
+        if (user) {
+            $(".logged-out").hide();
+            $(".logged-in").show();      
+            if (currentUser !== user._id && currentUser !== undefined) {
+                Notifier.success(null, "You are now logged in");
+            }
+            $("#username").html(renderUser(user));
+            currentUser = user._id;
         }
-        $("#username").html(renderUser(user));
-        currentUser = user._id;
-    }
-    else {
-        $(".logged-out").show();
-        $(".logged-in").hide();
-        if (currentUser !== undefined) Notifier.warning(null, "You are now logged out");
-        currentUser = null;
-    }
+        else {
+            $(".logged-out").show();
+            $(".logged-in").hide();
+            if (currentUser !== undefined) Notifier.warning(null, "You are now logged out");
+            currentUser = null;
+        }
+    });
 }
 
 
@@ -134,7 +137,7 @@ window.lesster = window.lesster || {};
 window.lesster.refreshUserDetails = refreshUserDetails;
 
 // end of module
-});
+}());
 
 
 
