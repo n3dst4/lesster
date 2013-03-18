@@ -1,0 +1,17 @@
+extends base
+
+//block append stylesheets
+    
+
+block body
+    #title-bar
+        .navbar.navbar-fixed-top
+            .navbar-inner
+                include titlebar_partial
+                        
+    #not-title-bar
+        block content
+    
+    block scripts
+        include core_scripts_partial
+

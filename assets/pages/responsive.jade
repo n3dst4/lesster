@@ -1,0 +1,25 @@
+extends base
+
+block body
+    .navbar.navbar-fixed-top
+        .navbar-inner
+            .container
+                include titlebar_partial
+
+    #not-title-bar.container
+        .row
+            .span3
+                ul.nav.nav-pills.nav-stacked
+                    li.active 
+                        a Account details
+                    li 
+                        a Your Lessters
+                    li 
+                        a Change password
+                    li 
+                        a Billabong details
+            .span9
+                block content
+        
+    block scripts
+        include core_scripts_partial

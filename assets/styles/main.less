@@ -5,7 +5,7 @@
 @gutter: 1em;
 @header-height: 2em;
 @tab-bar-height: 50px;
-@page-background: #eee;
+@page-background: #fff;
 @foreground: contrast(@page-background, #666, #ddd);
 
 
@@ -32,7 +32,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // GLOBAL RULES 
 
-* {box-sizing: border-box;}
+//* {box-sizing: border-box;}
 body { background-color: @page-background; color: @foreground; }
 
 .navbar { box-sizing: content-box; * {box-sizing: content-box;} } 
@@ -82,9 +82,9 @@ h2.panel-header { color: @foreground; font-size: 1em; .posish(@gutter, 0, auto, 
 
 .logged-in { display: none; }
 
-.navbar .navbar-inner { padding: 0 @gutter; }
+//.navbar .navbar-inner { padding: 0 @gutter; }
 
-.navbar-inner > * {margin-right: 0.5em;}
+//.navbar-inner > * {margin-right: 0.5em;}
 
 .slogan { padding-top: 12px; }
 
