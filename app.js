@@ -70,8 +70,8 @@ app.configure(function(){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     
-    app.use(express.cookieParser('some secret'));
-    app.use(express.cookieSession({secret: 'wn85v7tgnwo8vtgbowv8g'}));
+    app.use(express.cookieParser(config.cookieSecret));
+    app.use(express.cookieSession({secret: config.sessionSecret}));
     app.use(passport.initialize());
     app.use(passport.session());
     
