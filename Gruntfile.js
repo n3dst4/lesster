@@ -44,14 +44,14 @@ module.exports = function (grunt) {
         },
         watch: {
             less: {
-                files: ['**/*.less'],
+                files: ['assets/**/*.less'],
                 tasks: ['less'],
                 options: {
                     nospawn: true
                 }
             },
             jade: {
-                files: ['**/*.jade'],
+                files: ['assets/**/*.jade'],
                 tasks: ['jade'],
                 options: {
                     nospawn: true
