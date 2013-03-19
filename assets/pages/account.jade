@@ -4,12 +4,20 @@ block title Your account
 
 block content
     h1 Your account
-    | _id : {{user._id}}
-    br
-    | twitterId : {{user.twitterId}}
-    br
-    | twitterUsername : {{user.twitterUsername}}
-    br
-    | gitHubId : {{user.gitHubId}}
-    br
-    | gitHubUsername : {{user.gitHubUsername}}
+    h2 Details
+    table.table
+        tr
+            th _id
+            td {{user._id}}
+        tr
+            th twitterId
+            td {{user.twitterId}}
+        tr
+            th twitterUsername
+            td {{user.twitterUsername}}
+        tr
+            th gitHubId
+            td {{user.gitHubId}}
+        tr
+            th gitHubUsername
+            td {{user.gitHubUsername}}

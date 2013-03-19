@@ -108,13 +108,10 @@ function displayUser(user) {
 
 
 function renderUser(user) {
-    var username = user.username || user.twitterUsername || user.gitHubUsername;
-    
     var username = (user.username ? renderFullUser :
         user.twitterId ? renderTwitterUser :
         user.gitHubId ? renderGitHubUser :
-        $.noop)(user)
-
+        $.noop)(user);
     return "<a href='/account'>" + username + "</a>";
 }
 
