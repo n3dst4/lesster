@@ -1,23 +1,68 @@
-extends responsive
+extends account_base
+
+block vars
+    - var page = "account"
+
 
 block title Your account
 
-block content
+block account-body
     h1 Your account
     h2 Details
     table.table
         tr
             th _id
             td {{user._id}}
+            
+        tr
+            th Username
+            td {{user.username}}
+            
+        {{#if user.twitterId}}
         tr
             th twitterId
             td {{user.twitterId}}
         tr
             th twitterUsername
             td {{user.twitterUsername}}
+        {{else}}
+        tr
+            th Twitter
+            td 
+                form#twitter-link-form.oauth(action='/twitter-link', method='GET')
+                    button.btn(type='submit')
+                        img(src='/static/images/twitter_24.png', alt='')
+                        | Link with Twitter
+        {{/if}}    
+        
+        {{#if user.gitHubId}}
         tr
             th gitHubId
             td {{user.gitHubId}}
         tr
             th gitHubUsername
             td {{user.gitHubUsername}}
+        {{else}}
+        tr
+            th GitHub
+            td 
+                form#github-link-form.oauth(action='/github-link', method='GET')
+                    button.btn(type='submit')
+                        img(src='/static/images/octocat_24.png', alt='')
+                        | Link with GitHub
+        {{/if}}
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
