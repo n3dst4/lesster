@@ -62,7 +62,8 @@ passport.deserializeUser(function(id, done) {
 var app = express();
 
 app.configure(function(){
-    app.set('port', process.env.PORT || 3000);
+    app.set('port', config.listenPort || process.env.PORT || 3000);
+    app.set('host', config.listenHost || process.env.HOST || "0.0.0.0");
     app.set('views', __dirname + '/views');
     app.set('view engine', 'hbs');
     app.use(express.favicon());
@@ -153,7 +154,7 @@ app.get("/account", function (req, res) {
 });
 
 console.log("About to launch listener on port " + process.env.PORT + " " + app.get('port'));
-http.createServer(app).listen(app.get('port'), function(){
+http.createServer(app).listen(app.get('port'), app.get('host'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
