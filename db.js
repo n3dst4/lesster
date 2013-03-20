@@ -33,7 +33,6 @@ exports.getUserByUsername = function (username, done) {
 
 exports.getUserById = function (id, done) {
     users.findOne({_id: new BSON.ObjectID(id)}, function (err, user) {
-        console.log("findOne callback!")
         done(err, user);
     });
 };
@@ -54,7 +53,6 @@ exports.getTwitterUser = function (twitterProfile, done) {
         else {
             if (user.twitterUsername !== twitterProfile.username) {
                 user.twitterUsername = twitterProfile.username;
-                console.log("Updating user's twitterUsername, _id is " + user._id);
                 users.update(
                     {_id: user._id}, 
                     { "$set": {twitterUsername: twitterProfile.username}},
@@ -66,7 +64,7 @@ exports.getTwitterUser = function (twitterProfile, done) {
     });
 };
 
-/**
+/*
  * profile is the oauth profile object (as returned by passport-github and
  * passport-twitter at the very least, not sure about others).
  * 
@@ -84,7 +82,6 @@ exports.getUserFromOAuthProfile = function (profile, source, done) {
         if (user) {
             if (user[nameKey] !== profile.username) {
                 user[nameKey] = profile.username;
-                console.log("Updating user's " + nameKey + ", _id is " + user._id);
                 var newVals = {};
                 newVals[nameKey] = profile.username;
                 users.update(

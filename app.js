@@ -16,6 +16,10 @@ var express = require('express')
     , GitHubStrategy = require("passport-github").Strategy
     , config = require("./config");
 
+
+////////////////////////////////////////////////////////////////////////////////
+// AUTHENTICATION SETUP
+
 passport.use(new LocalStrategy(
     function(username, password, returnUser) {
         db.getUserByUsername(username, function(err, user) {
@@ -44,7 +48,6 @@ passport.use(new GitHubStrategy({
   }
 ));
 
-
 passport.serializeUser(function(user, done) {
     console.log("serialize " + user);
     done(null, user._id);
@@ -53,11 +56,14 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(id, done) {
     console.log("deserialize " + id);
     db.getUserById(id, function (err, user) {
-        console.log("getUserById for user id " + id + " returned " + user + " with error " + err);
         done(err, user);
     });
 });
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// CONFIGURE APP
 
 var app = express();
 
@@ -85,7 +91,9 @@ app.configure('development', function(){
 });
 
 
-console.log("About to set up routes");
+
+////////////////////////////////////////////////////////////////////////////////
+// ROUTES
 
 // main page (static view)
 app.get('/', function(req, res) {
@@ -148,12 +156,16 @@ app.get('/github-login-callback',
                                        failureRedirect: '/oauth-login-failed' })
 );
 
-
+// get account info
 app.get("/account", function (req, res) {
     res.render("account", {user: req.user});
 });
 
-console.log("About to launch listener on port " + process.env.PORT + " " + app.get('port'));
+
+////////////////////////////////////////////////////////////////////////////////
+// LAUNCH MOON MSSION
+
+console.log("About to launch listener on " + app.get("host") + ":" + app.get('port'));
 http.createServer(app).listen(app.get('port'), app.get('host'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
