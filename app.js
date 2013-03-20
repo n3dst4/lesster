@@ -67,11 +67,21 @@ passport.deserializeUser(function(id, done) {
 
 var app = express();
 
+app.configure('development', function(){
+    app.use(express.responseTime());
+    app.use(express.errorHandler());
+    app.use('/static', express.directory('static'));
+});
+
+
 app.configure(function(){
     app.set('port', config.listenPort || process.env.PORT || 3000);
     app.set('host', config.listenHost || process.env.HOST || "0.0.0.0");
     app.set('views', __dirname + '/views');
     app.set('view engine', 'hbs');
+    
+    app.use('/static', express.static('static'), {maxAge: config.staticMaxAge});
+    
     app.use(express.favicon());
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
@@ -84,11 +94,9 @@ app.configure(function(){
     
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
+    
 });
 
-app.configure('development', function(){
-  app.use(express.errorHandler());
-});
 
 
 
@@ -109,9 +117,9 @@ app.get('/oauth-login-failed', function(req, res) {
 });
 
 // static files
-app.get(/\/static\/(.*)/, function(req, res) {
-    res.sendfile("static/" + req.params[0]);
-});
+//app.get(/\/static\/(.*)/, function(req, res) {
+//    res.sendfile("static/" + req.params[0]);
+//});
 
 // perform login
 app.post('/login', passport.authenticate('local'), function(req, res) {
@@ -165,9 +173,9 @@ app.get("/account", function (req, res) {
 ////////////////////////////////////////////////////////////////////////////////
 // LAUNCH MOON MSSION
 
-console.log("About to launch listener on " + app.get("host") + ":" + app.get('port'));
+//console.log("About to launch listener on " + app.get("host") + ":" + app.get('port'));
 http.createServer(app).listen(app.get('port'), app.get('host'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+  console.log("Express server listening on " + app.get("host") + ":" + app.get('port'));
 });
 
 
