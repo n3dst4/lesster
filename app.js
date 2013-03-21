@@ -198,6 +198,11 @@ app.post("/account", function (req, res) {
     );
 });
 
+app.get("/email-change-validation/:uuid", function(req, res) {
+    // TODO
+    res.send("okay");
+});
+
 
 
 

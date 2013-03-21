@@ -33,12 +33,17 @@ block account-body
         .control-group
             label.control-label(for="username") Password
             .controls 
-                input(id="password", name="password", value="{{user.password}}", type="password")
+                input(id="password", name="password", value="{{oldPassword}}", type="password")
+
+        .control-group
+            label.control-label(for="username") Password
+            .controls 
+                input(id="password", name="password", value="{{password}}", type="password")
 
         .control-group
             label.control-label(for="username") Confirm password
             .controls 
-                input(id="password2", name="password2", value="{{user.password}}", type="password")
+                input(id="password2", name="password2", value="{{password2}}", type="password")
         .control-group
             label.control-label 
             .controls 

@@ -3,26 +3,35 @@
 
 var mongo = require('mongodb')
     , _ = require("underscore")
-    , passwordHash = require('password-hash');
+    , passwordHash = require('password-hash')
+    , nodemailer = require("nodemailer")
+    , config = require("./config")
+    , uuid = require('node-uuid');
 
 var MongoClient = mongo.MongoClient,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
     
 var users;
+var emailChangeRequests;
 
-// this is the real one!!
-//var dbUrl = "mongodb://lesster-dev:lesster-dev@linus.mongohq.com:10080/lesster-dev";
+var smtpTransport = nodemailer.createTransport("SMTP", {
+   service: "Gmail",
+   auth: {
+       user: config.smtpUsername,
+       pass: config.smtpPassword
+   }
+});
 
-// this is the old one off my fake rest service
-var dbUrl = "mongodb://lesster-dev:lesster-dev@alex.mongohq.com:10004/fake-rest-service";
 
-MongoClient.connect(dbUrl, function (err, client){
+
+MongoClient.connect(config.dbUrl, function (err, client){
     if (err) {
         throw err;
     }
     exports.client = client;
     users = client.collection('users');
+    emailChangeRequests = client.collection('pendingEmails');
     console.log("users collection: " + users);
     //users.insert({username: "qq", password: "qq"}, { w: 0 });
 });
@@ -39,31 +48,12 @@ exports.getUserById = function (id, done) {
 };
 
 exports.checkUserPassword = function (user, password) {
-    return user.password === password;
+    return password.length > 1 && 
+        ((passwordHash.isHashed(user.password) && passwordHash.verify(password, user.password))
+        || (user.password === password));
 };
 
-exports.getTwitterUser = function (twitterProfile, done) {
-    users.findOne({twitterId: twitterProfile.id}, function (err, user) {
-        if (err || ! user) {
-            var newUser = { twitterId: twitterProfile.id, twitterUsername: twitterProfile.username } ;
-            users.insert(newUser, function (err) {
-                if (!err) exports.getTwitterUser(twitterProfile, done);
-                else done("unable to create user", false);
-            });
-        }
-        else {
-            if (user.twitterUsername !== twitterProfile.username) {
-                user.twitterUsername = twitterProfile.username;
-                users.update(
-                    {_id: user._id}, 
-                    { "$set": {twitterUsername: twitterProfile.username}},
-                    {w: 0}
-                );
-            }
-            done(null, user);
-        }
-    });
-};
+
 
 /*
  * profile is the oauth profile object (as returned by passport-github and
@@ -131,23 +121,65 @@ exports.upgradeAccount = function(_id, username, password, password2, email, don
             return;
         }
         var hashed = passwordHash.generate(password);
-    
-        users.update(
-            {_id: _id}, 
-            { "$set": {username: username, password: hashed, email: email}},
-            function(err) {
-                if (err) {
-                    done(err); 
-                    return;
-                }
-                done(null);
+        
+        if (email) createEmailChangeRequest(_id, email, function (err) {
+            if (err) {
+                done(err);
             }
-        );
+            else {
+                users.update(
+                    {_id: _id}, 
+                    { "$set": {username: username, password: hashed}},
+                    function(err) {
+                        if (err) {
+                            done(err); 
+                            return;
+                        }
+                        done(null);
+                    }
+                );
+            }
+        });
     });
 };
 
 
-
+function createEmailChangeRequest(_id, email, done) {
+    var key = uuid.v4(),
+        url = config.emailChangeRequestUrl + key,
+        changeRequest = {
+            userId: _id,
+            newEmail: email,
+            key: key,
+            created: new Date()
+        };
+    emailChangeRequests.insert(changeRequest, function(err) {
+        
+        if (err) {
+            done(err);
+            return;
+        }
+        
+        smtpTransport.sendMail({
+            from: "Lesster <lesster@lumphammer.com>", // sender address
+            to: email, // comma separated list of receivers
+            subject: "Please confirm your email address", // Subject line
+            text: "Someone has requested that your email address, " + email + " " +
+                "be use for their account on Lesster. If this was not you, " +
+                "please ignore this message. Otherwise, if you recognize " +
+                "this request, please visit " + url + "to validate your address."
+        }, function(error, response){
+           if (error) {
+               console.log(error);
+               done(err);
+           }else{
+               console.log("Message sent: " + response.message);
+               done(null);
+           }
+        });
+        
+    });
+}
 
 
 
