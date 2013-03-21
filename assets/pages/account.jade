@@ -7,51 +7,141 @@ block vars
 block title Your account
 
 block account-body
-    h1 Your account
-    h2 Details
-    table.table
-        tr
-            th _id
-            td {{user._id}}
-            
-        tr
-            th Username
-            td {{user.username}}
-            
-        {{#if user.twitterId}}
-        tr
-            th twitterId
-            td {{user.twitterId}}
-        tr
-            th twitterUsername
-            td {{user.twitterUsername}}
-        {{else}}
-        tr
-            th Twitter
-            td 
-                form#twitter-link-form.oauth(action='/twitter-link', method='GET')
-                    button.btn(type='submit')
-                        img(src='/static/images/twitter_24.png', alt='')
-                        | Link with Twitter
-        {{/if}}    
+    h1(title="{{user._id}}") Your account
+    
+    {{#if upgraded}}
+    // Username
+    .form-horizontal
+        .control-group
+            label.control-label(for="username") Username
+            .controls 
+                input(type="text", disabled, value="{{user.username}}")
+    
+    //Email change form
+    form.form-horizontal(method="post", action="/account/email")
+        .control-group
+            label.control-label(for="username") Email
+            .controls 
+                input.input(id="email", name="email", value="{{user.email}}", type="text")
+        .control-group
+            label.control-label 
+            .controls 
+                button.btn.btn-primary Update email address
+    
+    //Password change form
+    form.form-horizontal(method="post", action="/account/password")
+        .control-group
+            label.control-label(for="username") Password
+            .controls 
+                input(id="password", name="password", value="{{user.password}}", type="password")
+
+        .control-group
+            label.control-label(for="username") Confirm password
+            .controls 
+                input(id="password2", name="password2", value="{{user.password}}", type="password")
+        .control-group
+            label.control-label 
+            .controls 
+                button.btn.btn-primary Change password
         
-        {{#if user.gitHubId}}
-        tr
-            th gitHubId
-            td {{user.gitHubId}}
-        tr
-            th gitHubUsername
-            td {{user.gitHubUsername}}
-        {{else}}
-        tr
-            th GitHub
-            td 
-                form#github-link-form.oauth(action='/github-link', method='GET')
-                    button.btn(type='submit')
-                        img(src='/static/images/octocat_24.png', alt='')
-                        | Link with GitHub
-        {{/if}}
+    {{else}}
+    //- there is no username, so user has not upgraded yet
+    p.
+        You are currently logging in with a 3rd-party account. If you enter 
+        a username and password here you will be able to log in directly. 
+        You will also be able to share your work using friendlier URLs.
         
+    {{#if error}}
+    p.text-error {{error}}
+    {{/if}}
+        
+    form.form-horizontal(method="post", action="/account")
+        .control-group(class="{{#if error.username}}error{{/if}}")
+            label.control-label(for="username") Username
+            .controls 
+                input(id="username", name="username", value="{{user.username}}", type="text")
+                span.help-inline {{error.username}}
+        .control-group(class="{{#if error.password}}error{{/if}}")
+            label.control-label(for="username") Password
+            .controls 
+                input(id="password", name="password", value="{{user.password}}", type="password")
+                span.help-inline {{error.password}}
+        .control-group(class="{{#if error.password}}error{{/if}}")
+            label.control-label(for="username") Confirm password
+            .controls 
+                input(id="password", name="password2", value="{{user.password}}", type="password")
+                span.help-inline {{error.password}}
+        .control-group(class="{{#if error.email}}error{{/if}}")
+            label.control-label(for="username") Email (optional)
+            .controls 
+                input.input(id="email", name="email", value="{{user.email}}", type="text")
+                span.help-inline {{error.email}}
+        .control-group
+            label.control-label 
+            .controls 
+                button.btn.btn-primary Save
+    
+    //Password
+    //Password2
+    //Email (opt)
+    {{/if}}
+    
+    
+    
+    
+
+                
+                
+                
+                
+                
+                
+    {{#if user.twitterId}}                
+    .control-group
+        label.control-label Twitter ID
+        .controls
+            span.input-large.uneditable-input {{user.twitterId}}
+        
+    .control-group
+        label.control-label Twitter username
+        .controls 
+            span.input-large.uneditable-input {{user.twitterUsername}}
+        
+    {{else}}
+    
+    .control-group
+        label.control-label Twitter
+        .controls 
+            form#twitter-link-form.oauth(action='/twitter-link', method='GET')
+                button.btn(type='submit')
+                    img(src='/static/images/twitter_24.png', alt='')
+                    | Link with Twitter
+
+    {{/if}}    
+
+    {{#if user.gitHubId}}
+    .control-group
+        label.control-label gitHubId
+        .controls 
+            span.input-large.uneditable-input {{user.gitHubId}}
+    
+    .control-group
+        label.control-label gitHubUsername
+        .controls 
+            span.input-large.uneditable-input {{user.gitHubUsername}}
+    {{else}}
+    
+    .control-group
+        label.control-label 
+        .controls 
+            form#github-link-form.oauth(action='/github-link', method='GET')
+                button.btn(type='submit')
+                    img(src='/static/images/octocat_24.png', alt='')
+                    | Link with GitHub
+    {{/if}}
+        
+            
+                    
 
 
 

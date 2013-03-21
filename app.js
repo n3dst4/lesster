@@ -14,7 +14,8 @@ var express = require('express')
     , LocalStrategy = require('passport-local').Strategy
     , TwitterStrategy = require("passport-twitter").Strategy
     , GitHubStrategy = require("passport-github").Strategy
-    , config = require("./config");
+    , config = require("./config")
+    , _ = require("underscore");
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -166,8 +167,39 @@ app.get('/github-login-callback',
 
 // get account info
 app.get("/account", function (req, res) {
-    res.render("account", {user: req.user});
+    if (req.user) {
+        var user = _.clone(req.user);
+        user.password = user.password2 = null;
+        res.render("account", {
+            user: user, 
+            upgraded: !!req.user.username
+        });
+    }
+    else{
+        res.redirect("/");
+    }
 });
+
+app.post("/account", function (req, res) {
+    if (req.user.username) throw("account already upgraded");
+    db.upgradeAccount(req.user._id, req.body.username, req.body.password,
+        req.body.password2, req.body.email, function(err) {
+            if (err) {
+                req.user.username = req.body.username;
+                req.user.password = req.body.password;
+                req.user.password2 = req.body.password2;
+                req.user.email = req.body.email;
+                res.render("account", {user: req.user, upgraded: false, error: err});
+            }
+            else {
+                res.redirect("/account");
+            }
+        }
+    );
+});
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

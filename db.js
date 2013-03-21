@@ -2,7 +2,8 @@
 // DATABASE
 
 var mongo = require('mongodb')
-    , _ = require("underscore");
+    , _ = require("underscore")
+    , passwordHash = require('password-hash');
 
 var MongoClient = mongo.MongoClient,
     Db = mongo.Db,
@@ -104,6 +105,44 @@ exports.getUserFromOAuthProfile = function (profile, source, done) {
         else { 
             done(err, false);
         }
+    });
+};
+
+exports.upgradeAccount = function(_id, username, password, password2, email, done) {
+    var validationFails = {};
+
+    if (username.length === 0) {
+        done({username: "Please enter a username"});
+        return;
+    }
+
+    if (password.length < 6) {
+        done({password: "Password is too short"});
+        return;
+    }
+    else if (password !== password2) {
+        done({password: "Passwords do not match"});
+        return;
+    }
+    
+    exports.getUserByUsername(username, function(error, existingUser) {
+        if (existingUser) {
+            done({username: "Username already taken"});
+            return;
+        }
+        var hashed = passwordHash.generate(password);
+    
+        users.update(
+            {_id: _id}, 
+            { "$set": {username: username, password: hashed, email: email}},
+            function(err) {
+                if (err) {
+                    done(err); 
+                    return;
+                }
+                done(null);
+            }
+        );
     });
 };
 

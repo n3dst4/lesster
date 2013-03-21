@@ -62,7 +62,7 @@ $(function(){
     );
     
     // hijack the logout form
-    $("#logout-form").hijackForm(null, null, refreshUserDetails);
+    $("#logout-form").hijackForm(null, null, function () {location.reload()});
     
     // hijack any and all oath forms (we don't need to name them all here, they all
     // work the same)
