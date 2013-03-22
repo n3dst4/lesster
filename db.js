@@ -31,7 +31,7 @@ MongoClient.connect(config.dbUrl, function (err, client){
     }
     exports.client = client;
     users = client.collection('users');
-    emailChangeRequests = client.collection('pendingEmails');
+    emailChangeRequests = client.collection('emailChangeRequests');
     console.log("users collection: " + users);
     //users.insert({username: "qq", password: "qq"}, { w: 0 });
 });
@@ -123,22 +123,18 @@ exports.upgradeAccount = function(_id, username, password, password2, email, don
         var hashed = passwordHash.generate(password);
         
         if (email) createEmailChangeRequest(_id, email, function (err) {
-            if (err) {
-                done(err);
-            }
-            else {
-                users.update(
-                    {_id: _id}, 
-                    { "$set": {username: username, password: hashed}},
-                    function(err) {
-                        if (err) {
-                            done(err); 
-                            return;
-                        }
-                        done(null);
+            if (err) { done(err); return; }
+            users.update(
+                {_id: _id}, 
+                { "$set": {username: username, password: hashed}},
+                function(err) {
+                    if (err) {
+                        done(err); 
+                        return;
                     }
-                );
-            }
+                    done(null);
+                }
+            );
         });
     });
 };
@@ -152,30 +148,26 @@ function createEmailChangeRequest(_id, email, done) {
             newEmail: email,
             key: key,
             created: new Date()
-        };
-    emailChangeRequests.insert(changeRequest, function(err) {
-        
-        if (err) {
-            done(err);
-            return;
-        }
-        
-        smtpTransport.sendMail({
+        },
+        message= {
             from: "Lesster <lesster@lumphammer.com>", // sender address
             to: email, // comma separated list of receivers
             subject: "Please confirm your email address", // Subject line
             text: "Someone has requested that your email address, " + email + " " +
                 "be use for their account on Lesster. If this was not you, " +
                 "please ignore this message. Otherwise, if you recognize " +
-                "this request, please visit " + url + "to validate your address."
-        }, function(error, response){
-           if (error) {
-               console.log(error);
-               done(err);
-           }else{
-               console.log("Message sent: " + response.message);
-               done(null);
-           }
+                "this request, please visit " + url + " to validate your address."
+        };
+        
+    emailChangeRequests.insert(changeRequest, function(err, objects) {
+        if (err) { done(err); return; }
+        changeRequest = objects[0];
+        changeRequest.messageSentAt = new Date();
+        smtpTransport.sendMail(message, function(error, response){
+            if (error) { console.log(error); done(err); return; }
+            console.log("Message sent: " + response.message);
+            emailChangeRequests.save(changeRequest,  {safe:false});
+            done(null);
         });
         
     });

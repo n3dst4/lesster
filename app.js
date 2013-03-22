@@ -198,8 +198,9 @@ app.post("/account", function (req, res) {
     );
 });
 
-app.get("/email-change-validation/:uuid", function(req, res) {
+app.get("/email-change-validation/:key", function(req, res) {
     // TODO
+    req.params.key
     res.send("okay");
 });
 
