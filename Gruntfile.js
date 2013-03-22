@@ -29,6 +29,8 @@ module.exports = function (grunt) {
             },
             foo: {
                 files: {
+                    "static/pages/email-verification-succeeded.html": "assets/pages/email-verification-succeeded.jade",
+                    "static/pages/email-verification-failed.html": "assets/pages/email-verification-failed.jade",
                     "static/pages/index.html": "assets/pages/index.jade",
                     "views/account.hbs": "assets/pages/account.jade"
                 }

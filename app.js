@@ -117,6 +117,14 @@ app.get('/oauth-login-failed', function(req, res) {
     res.sendfile("static/oauth-login-failed.html");
 });
 
+app.get('/email-verification-succeeded', function(req, res) {
+    res.sendfile("static/pages/email-verification-succeeded.html");
+});
+
+app.get('/email-verification-failed', function(req, res) {
+    res.sendfile("static/pages/email-verification-failed.html");
+});
+
 // static files
 //app.get(/\/static\/(.*)/, function(req, res) {
 //    res.sendfile("static/" + req.params[0]);
@@ -199,9 +207,10 @@ app.post("/account", function (req, res) {
 });
 
 app.get("/email-change-validation/:key", function(req, res) {
-    // TODO
-    req.params.key
-    res.send("okay");
+    db.verifyEmailChangeRequest(req.params.key, function (err, email) {
+        if (err) {console.log(err);}
+        res.redirect("/email-verification-" + (err?"failed":"succeeded"));
+    });
 });
 
 

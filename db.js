@@ -122,7 +122,7 @@ exports.upgradeAccount = function(_id, username, password, password2, email, don
         }
         var hashed = passwordHash.generate(password);
         
-        if (email) createEmailChangeRequest(_id, email, function (err) {
+        if (email) exports.createEmailChangeRequest(_id, email, function (err) {
             if (err) { done(err); return; }
             users.update(
                 {_id: _id}, 
@@ -140,7 +140,7 @@ exports.upgradeAccount = function(_id, username, password, password2, email, don
 };
 
 
-function createEmailChangeRequest(_id, email, done) {
+exports.createEmailChangeRequest = function(_id, email, done) {
     var key = uuid.v4(),
         url = config.emailChangeRequestUrl + key,
         changeRequest = {
@@ -162,7 +162,7 @@ function createEmailChangeRequest(_id, email, done) {
     emailChangeRequests.insert(changeRequest, function(err, objects) {
         if (err) { done(err); return; }
         changeRequest = objects[0];
-        changeRequest.messageSentAt = new Date();
+        changeRequest.messageSent = new Date();
         smtpTransport.sendMail(message, function(error, response){
             if (error) { console.log(error); done(err); return; }
             console.log("Message sent: " + response.message);
@@ -171,6 +171,32 @@ function createEmailChangeRequest(_id, email, done) {
         });
         
     });
+};
+
+exports.verifyEmailChangeRequest = function (key, done) {
+    
+    emailChangeRequests.findOne({key: key}, function(err, changeRequest){
+        if (err) { done(err); return; }
+        if (!changeRequest) { 
+            done({message: "This request could not be found."}); 
+            return;
+        }
+        if (changeRequest.verified){ 
+            done({message: "This request has already been processed."}); 
+            return; 
+        }
+        users.update(
+            {_id: changeRequest.userId},
+            {"$set": {email: changeRequest.newEmail}},
+            {safe: true},
+            function (err) {
+                changeRequest.verified = new Date();
+                emailChangeRequests.save(changeRequest, {safe:false});
+                done(err, err?null:changeRequest.newEmail);
+            }
+        );
+    });
+    
 }
 
 
