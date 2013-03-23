@@ -1,4 +1,4 @@
-/*globals less:false, ace:false, $:false, Notifier:false */
+/*globals less:false, ace:false, $:false, Notifier:false, _:false, Backbone:false */
 "use strict";
 (function(){
 
@@ -131,7 +131,10 @@ function renderFullUser (user) {
 
 // make refreshUserDetails globally available
 window.lesster = window.lesster || {};
+_.extend(window.lesster, Backbone.Events);
 window.lesster.refreshUserDetails = refreshUserDetails;
+
+window.lesster.on("authDetailsChanged", refreshUserDetails);
 
 // end of module
 }());

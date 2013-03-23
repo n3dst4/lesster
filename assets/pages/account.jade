@@ -127,10 +127,12 @@ block account-body
     {{/if}}
 
 
-
+block append scripts
+    script(type='text/javascript')
+        window.lesster.on("authDetailsChanged", function () {location.reload()} );
     
 
-
+ 
 
 
 

@@ -113,7 +113,7 @@ exports.addOAuthProfileToUser = function (userId, profile, source, done) {
             {_id: userId},
             {_id: 1},
             {"$set": updateVals},
-            {safe: true},
+            {},
             function (err, user) {
                 done(err, user);
             }
