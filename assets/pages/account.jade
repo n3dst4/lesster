@@ -15,23 +15,23 @@ block account-body
         .control-group
             label.control-label(for="username") Username
             .controls
-                input(type="text", disabled, value="{{user.username}}")
+                input.input-xlarge(type="text", disabled, value="{{user.username}}")
     {{else}}
     form.form-horizontal(method="post")
         .control-group(class="{{#if error.username}}error{{/if}}")
             label.control-label(for="username") Username
             .controls
-                input(type="text", name="username", value="{{formValues.username}}")
+                input.input-xlarge(type="text", name="username", value="{{formValues.username}}")
                 {{#if error.username}}
                 span.help-inline {{error.username}}
                 {{else}}
-                span.help-inline 
+                span.help-inline
                     | By creating a username, you will be able to share your
                     | work here more easily.
                 {{/if}}
         .control-group
-            label.control-label 
-            .controls 
+            label.control-label
+            .controls
                 button.btn.btn-primary Save username
     {{/if}}
 
@@ -39,101 +39,104 @@ block account-body
     form.form-horizontal(method="post")
         .control-group(class="{{#if error.email}}error{{/if}}")
             label.control-label(for="email") Email
-            .controls 
+            .controls
                 //input.input(id="email", name="email", value="{{#if formValues.email}}{{formValues.email}}{{else}}{{user.email}}{{/if}}", type="text")
-                input.input(id="email", name="email", value="{{first formValues.email user.email}}", type="text")
+                input.input-xlarge(id="email", name="email", value="{{first formValues.email user.email}}", type="text")
                 span.help-inline {{error.email}}
         .control-group
-            label.control-label 
-            .controls 
+            label.control-label
+            .controls
                 button.btn.btn-primary {{#if user.email}}Change{{else}}Save{{/if}} email address
-    
+
     //Password change form
     {{#if user.username}}
     form.form-horizontal(method="post")
         .control-group(class="{{#if error.password}}error{{/if}}")
             label.control-label(for="username") Password
             .controls
-                input(id="password", name="password", value="{{formValues.password}}", type="password")
+                input.input-xlarge(id="password", name="password", value="{{formValues.password}}", type="password")
                 span.help-inline {{error.password}}
         .control-group(class="{{#if error.password}}error{{/if}}")
             label.control-label(for="username") Confirm password
-            .controls 
-                input(id="password2", name="password2", value="{{formValues.password2}}", type="password")
+            .controls
+                input.input-xlarge(id="password2", name="password2", value="{{formValues.password2}}", type="password")
                 span.help-inline {{error.password}}
         .control-group
-            label.control-label 
-            .controls 
+            label.control-label
+            .controls
                 button.btn.btn-primary {{#if user.password}}Change{{else}}Set{{/if}} password
     {{else}}
     .form-horizontal
         .control-group
             label.control-label(for="username") Password
             .controls
-                input(id="password", disabled, type="password")
+                input.input-xlarge(id="password", disabled, type="password")
         .control-group
             label.control-label(for="username") Confirm password
-            .controls 
-                input(id="password", disabled, type="password")
+            .controls
+                input.input-xlarge(id="password", disabled, type="password")
         .control-group
-            label.control-label 
-            .controls 
+            label.control-label
+            .controls
                 button.btn.btn-primary(disabled) {{#if user.password}}Change{{else}}Set{{/if}} password
     {{/if}}
 
+    h2 Linked accounts
 
-                
-                
-                
-                
-                
-                
-    {{#if user.twitterId}}                
-    .control-group
-        label.control-label Twitter ID
-        .controls
-            span.input-large.uneditable-input {{user.twitterId}}
-        
-    .control-group
-        label.control-label Twitter username
-        .controls 
-            span.input-large.uneditable-input {{user.twitterUsername}}
-        
+    // TWITTERS
+    {{#if user.twitterUsername}}
+    form.form-horizontal#twitter-link-form.oauth(action='/twitter-unlink', method='POST')
+        .control-group
+            label.control-label Twitter
+            .controls
+                label 
+                    | Linked to Twitter account 
+                    a(href="http://twitter.com/{{user.twitterUsername}}") {{user.twitterUsername}}
+                button.btn.btn-danger(type='submit') Unlink
     {{else}}
-    
-    .control-group
-        label.control-label Twitter
-        .controls 
-            form#twitter-link-form.oauth(action='/twitter-link', method='GET')
+    form.oauth.form-horizontal#github-link-form.oauth(action='/twitter-link', method='GET')
+        .control-group
+            label.control-label Twitter
+            .controls
                 button.btn(type='submit')
                     img(src='/static/images/twitter_24.png', alt='')
                     | Link with Twitter
+    {{/if}}
 
-    {{/if}}    
 
-    {{#if user.gitHubId}}
-    .control-group
-        label.control-label gitHubId
-        .controls 
-            span.input-large.uneditable-input {{user.gitHubId}}
-    
-    .control-group
-        label.control-label gitHubUsername
-        .controls 
-            span.input-large.uneditable-input {{user.gitHubUsername}}
+
+
+    // GITHUBS
+    {{#if user.gitHubUsername}}
+    form.form-horizontal#github-link-form.oauth(action='/github-unlink', method='POST')
+        .control-group
+            label.control-label GitHub
+            .controls
+                label 
+                    | Linked to GitHub account 
+                    a(href="http://github.com/{{user.gitHubUsername}}") {{user.gitHubUsername}}
+                button.btn.btn-danger(type='submit') Unlink
     {{else}}
-    
-    .control-group
-        label.control-label 
-        .controls 
-            form#github-link-form.oauth(action='/github-link', method='GET')
+    form.oauth.form-horizontal#github-link-form.oauth(action='/github-link', method='GET')
+        .control-group
+            label.control-label GitHub
+            .controls
                 button.btn(type='submit')
                     img(src='/static/images/octocat_24.png', alt='')
                     | Link with GitHub
     {{/if}}
-        
-            
-                    
+
+
+
+    
+
+
+
+
+
+
+
+
 
 
 

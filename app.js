@@ -29,7 +29,7 @@ passport.use(new LocalStrategy(
     }
 ));
 
-passport.use(new TwitterStrategy({
+passport.use("twitter", new TwitterStrategy({
         consumerKey: config.twitterConsumerKey,
         consumerSecret: config.twitterConsumerSecret,
         callbackURL: config.twitterCallbackUrl
@@ -39,15 +39,43 @@ passport.use(new TwitterStrategy({
     }
 ));
 
-passport.use(new GitHubStrategy({
-    clientID: config.gitHubClientId,
-    clientSecret: config.gitHubClientSecret,
-    callbackURL: config.gitHubCallbackUrl
-  },
-  function(accessToken, refreshToken, profile, done) {
-    db.getUserFromOAuthProfile(profile, "gitHub", done);
-  }
+passport.use("twitter-link", new TwitterStrategy({
+        consumerKey: config.twitterConsumerKey,
+        consumerSecret: config.twitterConsumerSecret,
+        callbackURL: config.twitterLinkCallbackUrl,
+        passReqToCallback: true
+    },
+    function(req, token, tokenSecret, profile, done) {
+        if (!req.user) {done(new Error("Not logged in")); return;}
+        db.addOAuthProfileToUser(req.user._id, profile, "twitter", done);
+    }
 ));
+
+passport.use("github", new GitHubStrategy({
+        clientID: config.gitHubClientId,
+        clientSecret: config.gitHubClientSecret,
+        callbackURL: config.gitHubCallbackUrl
+    },
+    function(accessToken, refreshToken, profile, done) {
+        db.getUserFromOAuthProfile(profile, "gitHub", done);
+    }
+));
+
+
+passport.use("github-link", new GitHubStrategy({
+        clientID: config.gitHubClientId,
+        clientSecret: config.gitHubClientSecret,
+        callbackURL: config.gitHubLinkCallbackUrl,
+        passReqToCallback: true
+    },
+    function(req, token, tokenSecret, profile, done) {
+        if (!req.user) {done(new Error("Not logged in")); return;}
+        db.addOAuthProfileToUser(req.user._id, profile, "gitHub", done);
+    }
+));
+
+
+
 
 passport.serializeUser(function(user, done) {
     console.log("serialize " + user);
@@ -136,10 +164,10 @@ app.get('/email-verification-failed', function(req, res) {
     res.sendfile("static/pages/email-verification-failed.html");
 });
 
-// static files
-//app.get(/\/static\/(.*)/, function(req, res) {
-//    res.sendfile("static/" + req.params[0]);
-//});
+
+////////////////////////////////////////////////////////////////////////////////
+// REGULAR LOGIN STUFF
+
 
 // perform login
 app.post('/login', passport.authenticate('local'), function(req, res) {
@@ -158,31 +186,45 @@ app.get('/userdetails', function (req, res) {
     else res.send(req.user);
 });
 
+
+////////////////////////////////////////////////////////////////////////////////
+// OAUTH STUFFS
+
 // Redirect the user to Twitter for authentication.  When complete, Twitter
 // will redirect the user back to the application
 app.get('/twitter-login', passport.authenticate('twitter'));
+app.get('/twitter-link', passport.authenticate('twitter-link'));
 
 // Redirect the user to GitHub for authentication.  When complete, GitHub
 // will redirect the user back to the application
 app.get('/github-login', passport.authenticate('github'));
+app.get('/github-link', passport.authenticate('github-link'));
 
-// Twitter will redirect the user to this URL after approval.  Finish the
-// authentication process by attempting to obtain an access token.  If
-// access was granted, the user will be logged in.  Otherwise,
-// authentication has failed.
+// Twitter will redirect the user to this URL after approval.
 app.get('/twitter-login-callback', 
     passport.authenticate('twitter', { successRedirect: '/oauth-login-succeeded',
                                        failureRedirect: '/oauth-login-failed' })
 );
 
-// GitHub will redirect the user to this URL after approval.  Finish the
-// authentication process by attempting to obtain an access token.  If
-// access was granted, the user will be logged in.  Otherwise,
-// authentication has failed.
+app.get('/twitter-link-callback', 
+    passport.authenticate('twitter-link', { successRedirect: '/oauth-login-succeeded',
+                                       failureRedirect: '/oauth-login-failed' })
+);
+
+// GitHub will redirect the user to this URL after approval.
 app.get('/github-login-callback', 
     passport.authenticate('github', { successRedirect: '/oauth-login-succeeded',
                                        failureRedirect: '/oauth-login-failed' })
 );
+
+app.get('/github-link-callback', 
+    passport.authenticate('github-link', { successRedirect: '/oauth-login-succeeded',
+                                       failureRedirect: '/oauth-login-failed' })
+);
+
+
+////////////////////////////////////////////////////////////////////////////////
+// ACCOUNT PAGE STUFF
 
 // get account info
 app.get("/account", function (req, res) {

@@ -98,46 +98,70 @@ exports.getUserFromOAuthProfile = function (profile, source, done) {
     });
 };
 
-exports.upgradeAccount = function(_id, username, password, password2, email, done) {
-    var validationFails = {};
 
-    if (username.length === 0) {
-        done({username: "Please enter a username"});
-        return;
-    }
-
-    if (password.length < 6) {
-        done({password: "Password is too short"});
-        return;
-    }
-    else if (password !== password2) {
-        done({password: "Passwords do not match"});
-        return;
-    }
-    
-    exports.getUserByUsername(username, function(error, existingUser) {
-        if (existingUser) {
-            done({username: "Username already taken"});
-            return;
-        }
-        var hashed = passwordHash.generate(password);
-        
-        if (email) exports.createEmailChangeRequest(_id, email, function (err) {
-            if (err) { done(err); return; }
-            users.update(
-                {_id: _id}, 
-                { "$set": {username: username, password: hashed}},
-                function(err) {
-                    if (err) {
-                        done(err); 
-                        return;
-                    }
-                    done(null);
-                }
-            );
-        });
+exports.addOAuthProfileToUser = function (userId, profile, source, done) {
+    var idKey = source + "Id";
+    var nameKey = source + "Username";
+    var searchCriteria = {};
+    searchCriteria[idKey] = profile.id;
+    var updateVals = {};
+    updateVals[idKey] = profile.id;
+    updateVals[nameKey] = profile.username;
+    users.findOne(searchCriteria, function (err, user) {
+        if (err || user) return done(err, false);
+        users.findAndModify(
+            {_id: userId},
+            {_id: 1},
+            {"$set": updateVals},
+            {safe: true},
+            function (err, user) {
+                done(err, user);
+            }
+        );
     });
-};
+}
+
+
+//exports.upgradeAccount = function(_id, username, password, password2, email, done) {
+//    var validationFails = {};
+//
+//    if (username.length === 0) {
+//        done({username: "Please enter a username"});
+//        return;
+//    }
+//
+//    if (password.length < 6) {
+//        done({password: "Password is too short"});
+//        return;
+//    }
+//    else if (password !== password2) {
+//        done({password: "Passwords do not match"});
+//        return;
+//    }
+//    
+//    exports.getUserByUsername(username, function(error, existingUser) {
+//        if (existingUser) {
+//            done({username: "Username already taken"});
+//            return;
+//        }
+//        var hashed = passwordHash.generate(password);
+//        
+//        if (email) exports.createEmailChangeRequest(_id, email, function (err) {
+//            if (err) { done(err); return; }
+//            users.update(
+//                {_id: _id}, 
+//                { "$set": {username: username, password: hashed}},
+//                function(err) {
+//                    if (err) {
+//                        done(err); 
+//                        return;
+//                    }
+//                    done(null);
+//                }
+//            );
+//        });
+//    });
+//};
 
 
 exports.createEmailChangeRequest = function(_id, email, done) {
