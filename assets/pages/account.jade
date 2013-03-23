@@ -8,92 +8,79 @@ block title Your account
 
 block account-body
     h1(title="{{user._id}}") Your account
-    
-    {{#if upgraded}}
+
     // Username
+    {{#if user.username}}
     .form-horizontal
         .control-group
             label.control-label(for="username") Username
-            .controls 
+            .controls
                 input(type="text", disabled, value="{{user.username}}")
-    
-    //Email change form
-    form.form-horizontal(method="post", action="/account/email")
-        .control-group
-            label.control-label(for="username") Email
-            .controls 
-                input.input(id="email", name="email", value="{{user.email}}", type="text")
-        .control-group
-            label.control-label 
-            .controls 
-                button.btn.btn-primary Update email address
-    
-    //Password change form
-    form.form-horizontal(method="post", action="/account/password")
-        .control-group
-            label.control-label(for="username") Password
-            .controls 
-                input(id="password", name="password", value="{{oldPassword}}", type="password")
-
-        .control-group
-            label.control-label(for="username") Password
-            .controls 
-                input(id="password", name="password", value="{{password}}", type="password")
-
-        .control-group
-            label.control-label(for="username") Confirm password
-            .controls 
-                input(id="password2", name="password2", value="{{password2}}", type="password")
-        .control-group
-            label.control-label 
-            .controls 
-                button.btn.btn-primary Change password
-        
     {{else}}
-    //- there is no username, so user has not upgraded yet
-    p.
-        You are currently logging in with a 3rd-party account. If you enter 
-        a username and password here you will be able to log in directly. 
-        You will also be able to share your work using friendlier URLs.
-        
-    {{#if error}}
-    p.text-error {{error}}
-    {{/if}}
-        
-    form.form-horizontal(method="post", action="/account")
+    form.form-horizontal(method="post")
         .control-group(class="{{#if error.username}}error{{/if}}")
             label.control-label(for="username") Username
-            .controls 
-                input(id="username", name="username", value="{{user.username}}", type="text")
+            .controls
+                input(type="text", name="username", value="{{formValues.username}}")
+                {{#if error.username}}
                 span.help-inline {{error.username}}
-        .control-group(class="{{#if error.password}}error{{/if}}")
-            label.control-label(for="username") Password
+                {{else}}
+                span.help-inline 
+                    | By creating a username, you will be able to share your
+                    | work here more easily.
+                {{/if}}
+        .control-group
+            label.control-label 
             .controls 
-                input(id="password", name="password", value="{{user.password}}", type="password")
-                span.help-inline {{error.password}}
-        .control-group(class="{{#if error.password}}error{{/if}}")
-            label.control-label(for="username") Confirm password
-            .controls 
-                input(id="password", name="password2", value="{{user.password}}", type="password")
-                span.help-inline {{error.password}}
+                button.btn.btn-primary Save username
+    {{/if}}
+
+    //Email change form
+    form.form-horizontal(method="post")
         .control-group(class="{{#if error.email}}error{{/if}}")
-            label.control-label(for="username") Email (optional)
+            label.control-label(for="email") Email
             .controls 
-                input.input(id="email", name="email", value="{{user.email}}", type="text")
+                //input.input(id="email", name="email", value="{{#if formValues.email}}{{formValues.email}}{{else}}{{user.email}}{{/if}}", type="text")
+                input.input(id="email", name="email", value="{{first formValues.email user.email}}", type="text")
                 span.help-inline {{error.email}}
         .control-group
             label.control-label 
             .controls 
-                button.btn.btn-primary Save
+                button.btn.btn-primary {{#if user.email}}Change{{else}}Save{{/if}} email address
     
-    //Password
-    //Password2
-    //Email (opt)
+    //Password change form
+    {{#if user.username}}
+    form.form-horizontal(method="post")
+        .control-group(class="{{#if error.password}}error{{/if}}")
+            label.control-label(for="username") Password
+            .controls
+                input(id="password", name="password", value="{{formValues.password}}", type="password")
+                span.help-inline {{error.password}}
+        .control-group(class="{{#if error.password}}error{{/if}}")
+            label.control-label(for="username") Confirm password
+            .controls 
+                input(id="password2", name="password2", value="{{formValues.password2}}", type="password")
+                span.help-inline {{error.password}}
+        .control-group
+            label.control-label 
+            .controls 
+                button.btn.btn-primary {{#if user.password}}Change{{else}}Set{{/if}} password
+    {{else}}
+    .form-horizontal
+        .control-group
+            label.control-label(for="username") Password
+            .controls
+                input(id="password", disabled, type="password")
+        .control-group
+            label.control-label(for="username") Confirm password
+            .controls 
+                input(id="password", disabled, type="password")
+        .control-group
+            label.control-label 
+            .controls 
+                button.btn.btn-primary(disabled) {{#if user.password}}Change{{else}}Set{{/if}} password
     {{/if}}
-    
-    
-    
-    
+
 
                 
                 

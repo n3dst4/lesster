@@ -197,7 +197,29 @@ exports.verifyEmailChangeRequest = function (key, done) {
         );
     });
     
-}
+};
+
+
+exports.updatePassword = function (userId, password, done) {
+    var hashed = passwordHash.generate(password);
+    users.update(
+        {_id: userId}, 
+        { "$set": {password: hashed}},
+        {safe: true},
+        done
+    );
+};
+
+
+
+exports.updateUsername = function (userId, username, done) {
+    users.update(
+        {_id: userId}, 
+        { "$set": {username: username}},
+        {safe: true},
+        done
+    );
+};
 
 
 

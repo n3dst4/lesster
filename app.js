@@ -4,7 +4,6 @@
  */
 
 var express = require('express')
-    , connect = require("connect")
     //, routes = require('./routes')
     , db = require('./db')
     //, task = require('./routes/task')
@@ -14,6 +13,7 @@ var express = require('express')
     , LocalStrategy = require('passport-local').Strategy
     , TwitterStrategy = require("passport-twitter").Strategy
     , GitHubStrategy = require("passport-github").Strategy
+    , hbs = require('hbs')
     , config = require("./config")
     , _ = require("underscore");
 
@@ -100,6 +100,17 @@ app.configure(function(){
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// TEMPLATING SETUP
+
+hbs.registerHelper("first", function () {
+    var misc = Array.prototype.pop.apply(arguments);
+    for (var i = 0; i < arguments.length; i++ ) {
+        if (arguments[i]) return arguments[i];
+    }
+    return "";
+});
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // ROUTES
@@ -180,7 +191,8 @@ app.get("/account", function (req, res) {
         user.password = user.password2 = null;
         res.render("account", {
             user: user, 
-            upgraded: !!req.user.username
+            upgraded: !!req.user.username,
+            usernameSaved: !!req.user.username,
         });
     }
     else{
@@ -189,24 +201,57 @@ app.get("/account", function (req, res) {
 });
 
 app.post("/account", function (req, res) {
-    if (req.user.username) throw("account already upgraded");
-    db.upgradeAccount(req.user._id, req.body.username, req.body.password,
-        req.body.password2, req.body.email, function(err) {
-            if (err) {
-                req.user.username = req.body.username;
-                req.user.password = req.body.password;
-                req.user.password2 = req.body.password2;
-                req.user.email = req.body.email;
-                res.render("account", {user: req.user, upgraded: false, error: err});
-            }
-            else {
-                res.redirect("/account");
-            }
+    if (!req.user) res.send(401);
+    
+    if (req.body.username) {
+        db.updateUsername(req.user._id, req.body.username, function (err) {
+            if (err) err = {username: "That username isn't available"};
+            done(err, {username: req.body.username});
+        });
+    } 
+    else if (req.body.password) {
+        var formValues = {password: req.body.password, password2: req.body.password2};
+        var msg = (req.body.password !== req.body.password2)? "Passwords do not match" :
+            (req.body.password.length < 6)? "Password is not long enough (min 6 characters please)" :
+            "";
+        if (msg) {
+            done({password: msg}, formValues);
         }
-    );
+        else {
+            db.updatePassword(req.user._id, req.body.password, function (err) {
+                done(err, formValues);
+            });        
+        }
+    }
+    else if (req.body.email) {
+        if (req.body.email.indexOf("@") < 0) {
+            done({email: "Not a valid email address"}, {email: req.body.email});
+        }
+        else {
+            db.createEmailChangeRequest(req.user._id, req.body.email, function (err) {
+                done(err, {email: req.body.email});
+            });   
+        }
+    }
+    else {
+        done();
+    }
+    
+    function done (err, formValues) {
+        if (err) {
+            res.render("account", {
+                user: req.user, 
+                formValues: formValues,
+                error: err
+            });
+        }
+        else {
+            res.redirect("/account");
+        }        
+    }
 });
 
-app.get("/email-change-validation/:key", function(req, res) {
+app.get("/email-verification/:key", function(req, res) {
     db.verifyEmailChangeRequest(req.params.key, function (err, email) {
         if (err) {console.log(err);}
         res.redirect("/email-verification-" + (err?"failed":"succeeded"));
