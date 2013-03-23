@@ -1,12 +1,14 @@
 extends account_base
 
-block vars
-    - var page = "x"
-
-
-
 block title Success
 
 block account-body
     h1 Success
-    p Thank you! Your email address has been verified.
+    p 
+        | Thank you! Your email address has been verified.
+        ul
+            li
+                a(href="/") The home page
+            li
+                a(href="/account") Manage your account
+    
