@@ -195,11 +195,6 @@ app.get('/userdetails', function (req, res) {
 app.get('/twitter-login', passport.authenticate('twitter'));
 app.get('/twitter-link', passport.authenticate('twitter-link'));
 
-// Redirect the user to GitHub for authentication.  When complete, GitHub
-// will redirect the user back to the application
-app.get('/github-login', passport.authenticate('github'));
-app.get('/github-link', passport.authenticate('github-link'));
-
 // Twitter will redirect the user to this URL after approval.
 app.get('/twitter-login-callback', 
     passport.authenticate('twitter', { successRedirect: '/oauth-login-succeeded',
@@ -211,6 +206,22 @@ app.get('/twitter-link-callback',
                                        failureRedirect: '/oauth-login-failed' })
 );
 
+app.post('/twitter-unlink', function (req, res){
+    db.unlinkOAuth(req.user._id, "twitter", function(err) {
+        res.redirect("/account");
+    });
+});
+
+
+
+
+
+// Redirect the user to GitHub for authentication.  When complete, GitHub
+// will redirect the user back to the application
+app.get('/github-login', passport.authenticate('github'));
+app.get('/github-link', passport.authenticate('github-link'));
+
+
 // GitHub will redirect the user to this URL after approval.
 app.get('/github-login-callback', 
     passport.authenticate('github', { successRedirect: '/oauth-login-succeeded',
@@ -221,6 +232,13 @@ app.get('/github-link-callback',
     passport.authenticate('github-link', { successRedirect: '/oauth-login-succeeded',
                                        failureRedirect: '/oauth-login-failed' })
 );
+
+app.post('/github-unlink', function (req, res){
+    db.unlinkOAuth(req.user._id, "gitHub", function(err) {
+        res.redirect("/account");
+    });
+});
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

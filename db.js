@@ -121,6 +121,18 @@ exports.addOAuthProfileToUser = function (userId, profile, source, done) {
     });
 }
 
+exports.unlinkOAuth = function (userId, source, done) {
+    var update = {};
+    update[source + "Id"] = 1;
+    update[source + "Username"] = 1;
+    users.update(
+        {_id: userId},
+        {"$unset": update},
+        {safe: true},
+        done
+    );    
+};
+
 
 //exports.upgradeAccount = function(_id, username, password, password2, email, done) {
 //    var validationFails = {};
