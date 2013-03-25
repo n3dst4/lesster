@@ -17,3 +17,8 @@ block responsive-body
                     a(href="/billabong") Billabong details
         .span9
             block account-body
+
+block append scripts
+    script(type='text/javascript')
+        window.lesster.on("authDetailsChanged", function () {location.reload()} );
+    

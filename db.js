@@ -108,7 +108,8 @@ exports.addOAuthProfileToUser = function (userId, profile, source, done) {
     updateVals[idKey] = profile.id;
     updateVals[nameKey] = profile.username;
     users.findOne(searchCriteria, function (err, user) {
-        if (err || user) return done(err, false);
+        if (user) err = {type: "validation", message: ""};
+        if (err) return done(err, false);
         users.findAndModify(
             {_id: userId},
             {_id: 1},

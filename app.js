@@ -131,13 +131,32 @@ app.configure(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // TEMPLATING SETUP
 
-hbs.registerHelper("first", function () {
+
+var hbsFirstHelper = function () {
     var misc = Array.prototype.pop.apply(arguments);
     for (var i = 0; i < arguments.length; i++ ) {
         if (arguments[i]) return arguments[i];
     }
     return "";
-});
+};
+
+var hbsAnyHelper = function () {
+    return !!(hbsFirstHelper.apply(this, arguments));
+};
+
+var hbsCountHelper = function () {
+    var count = 0;
+    var misc = Array.prototype.pop.apply(arguments);
+    console.log(JSON.stringify(arguments));
+    for (var i = 0; i < arguments.length; i++ ) {
+        if (arguments[i]) count++;
+    }
+    return count;
+};
+
+hbs.registerHelper("first", hbsFirstHelper);
+hbs.registerHelper("any", hbsAnyHelper);
+hbs.registerHelper("count", hbsCountHelper);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -248,11 +267,10 @@ app.post('/github-unlink', function (req, res){
 app.get("/account", function (req, res) {
     if (req.user) {
         var user = _.clone(req.user);
-        user.password = user.password2 = null;
+        //console.log(JSON.stringify(user));
+        //user.password = user.password2 = null;
         res.render("account", {
-            user: user, 
-            upgraded: !!req.user.username,
-            usernameSaved: !!req.user.username,
+            user: user
         });
     }
     else{

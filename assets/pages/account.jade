@@ -85,14 +85,14 @@ block account-body
 
     // TWITTERS
     {{#if user.twitterUsername}}
-    form.form-horizontal#twitter-link-form(action='/twitter-unlink', method='POST')
+    form.form-horizontal#twitter-link-form.unlink(action='/twitter-unlink', method='POST')
         .control-group
             label.control-label Twitter
             .controls
                 label 
                     | Linked to Twitter account 
                     a(href="http://twitter.com/{{user.twitterUsername}}") {{user.twitterUsername}}
-                button.btn.btn-danger(type='submit') Unlink
+                button.btn.btn-danger.unlink(type='submit') Unlink
     {{else}}
     form.oauth.form-horizontal#github-link-form.oauth(action='/twitter-link', method='GET')
         .control-group
@@ -108,14 +108,14 @@ block account-body
 
     // GITHUBS
     {{#if user.gitHubUsername}}
-    form.form-horizontal#github-link-form(action='/github-unlink', method='POST')
+    form.form-horizontal#github-link-form.unlink(action='/github-unlink', method='POST')
         .control-group
             label.control-label GitHub
             .controls
                 label 
                     | Linked to GitHub account 
                     a(href="http://github.com/{{user.gitHubUsername}}") {{user.gitHubUsername}}
-                button.btn.btn-danger(type='submit') Unlink
+                button.btn.btn-danger.unlink(type='submit') Unlink
     {{else}}
     form.oauth.form-horizontal#github-link-form.oauth(action='/github-link', method='GET')
         .control-group
@@ -128,9 +128,19 @@ block account-body
 
 
 block append scripts
-    script(type='text/javascript')
-        window.lesster.on("authDetailsChanged", function () {location.reload()} );
     
+    script(type='text/javascript')
+        var factors = {{count user.password user.twitterId user.gitHubId}};
+        if (factors < 2) {
+            $(function(){
+                $("form.unlink").on("submit", function(){
+                    return confirm("This is your last login method! "+
+                    "If you unlink this account you will not be able to log in "+
+                    "again in future.");
+                });
+            });
+        }
+        
 
  
 
