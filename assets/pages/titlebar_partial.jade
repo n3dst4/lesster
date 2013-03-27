@@ -15,11 +15,11 @@ form#password-login-form.navbar-form.pull-right.logged-out(action='/login', meth
     input.span2(name='username', type='text', placeholder='username')
     input.span2(name='password', type='password', placeholder='password')
     button.btn(type='submit') Log in
-form#github-login-form.navbar-form.pull-right.logged-out.oauth(action='/github-login', method='GET')
+form#github-login-form.navbar-form.pull-right.logged-out.oauth(action='/oauth/github/login', method='GET')
     button.btn(type='submit')
         img(src='/static/images/octocat_24.png', alt='')
         | GitHub
-form#twitter-login-form.navbar-form.pull-right.logged-out.oauth(action='/twitter-login', method='GET')
+form#twitter-login-form.navbar-form.pull-right.logged-out.oauth(action='/oauth/twitter/login', method='GET')
     button.btn(type='submit')
         img(src='/static/images/twitter_24.png', alt='')
         | Twitter

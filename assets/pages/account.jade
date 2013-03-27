@@ -85,7 +85,7 @@ block account-body
 
     // TWITTERS
     {{#if user.twitterUsername}}
-    form.form-horizontal#twitter-link-form.unlink(action='/twitter-unlink', method='POST')
+    form.form-horizontal#twitter-link-form.unlink(action='/oauth/twitter/unlink', method='POST')
         .control-group
             label.control-label Twitter
             .controls
@@ -94,7 +94,7 @@ block account-body
                     a(href="http://twitter.com/{{user.twitterUsername}}") {{user.twitterUsername}}
                 button.btn.btn-danger.unlink(type='submit') Unlink
     {{else}}
-    form.oauth.form-horizontal#github-link-form.oauth(action='/twitter-link', method='GET')
+    form.oauth.form-horizontal#github-link-form.oauth(action='/oauth/twitter/link', method='GET')
         .control-group
             label.control-label Twitter
             .controls
@@ -108,7 +108,7 @@ block account-body
 
     // GITHUBS
     {{#if user.gitHubUsername}}
-    form.form-horizontal#github-link-form.unlink(action='/github-unlink', method='POST')
+    form.form-horizontal#github-link-form.unlink(action='/oauth/github/unlink', method='POST')
         .control-group
             label.control-label GitHub
             .controls
@@ -117,7 +117,7 @@ block account-body
                     a(href="http://github.com/{{user.gitHubUsername}}") {{user.gitHubUsername}}
                 button.btn.btn-danger.unlink(type='submit') Unlink
     {{else}}
-    form.oauth.form-horizontal#github-link-form.oauth(action='/github-link', method='GET')
+    form.oauth.form-horizontal#github-link-form.oauth(action='/oauth/github/link', method='GET')
         .control-group
             label.control-label GitHub
             .controls

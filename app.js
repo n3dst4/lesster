@@ -167,12 +167,16 @@ app.get('/', function(req, res) {
     res.sendfile("static/pages/index.html");
 });
 
-app.get('/oauth-login-succeeded', function(req, res) {
+app.get('/oauth/login-succeeded', function(req, res) {
     res.sendfile("static/oauth-login-succeeded.html");
 });
 
-app.get('/oauth-login-failed', function(req, res) {
+app.get('/oauth/login-failed', function(req, res) {
     res.sendfile("static/oauth-login-failed.html");
+});
+
+app.get('/oauth/link-failed', function(req, res) {
+    res.sendfile("static/oauth-link-failed.html");
 });
 
 app.get('/email-verification-succeeded', function(req, res) {
@@ -211,21 +215,21 @@ app.get('/userdetails', function (req, res) {
 
 // Redirect the user to Twitter for authentication.  When complete, Twitter
 // will redirect the user back to the application
-app.get('/twitter-login', passport.authenticate('twitter'));
-app.get('/twitter-link', passport.authenticate('twitter-link'));
+app.get('/oauth/twitter/login', passport.authenticate('twitter'));
+app.get('/oauth/twitter/link', passport.authenticate('twitter-link'));
 
 // Twitter will redirect the user to this URL after approval.
-app.get('/twitter-login-callback', 
-    passport.authenticate('twitter', { successRedirect: '/oauth-login-succeeded',
-                                       failureRedirect: '/oauth-login-failed' })
+app.get('/oauth/twitter/login/callback', 
+    passport.authenticate('twitter', { successRedirect: '/oauth/login-succeeded',
+                                       failureRedirect: '/oauth/login-failed' })
 );
 
-app.get('/twitter-link-callback', 
-    passport.authenticate('twitter-link', { successRedirect: '/oauth-login-succeeded',
-                                       failureRedirect: '/oauth-login-failed' })
+app.get('/oauth/twitter/link/callback', 
+    passport.authenticate('twitter-link', { successRedirect: '/oauth/login-succeeded',
+                                       failureRedirect: '/oauth/link-failed' })
 );
 
-app.post('/twitter-unlink', function (req, res){
+app.post('/oauth/twitter/unlink', function (req, res){
     db.unlinkOAuth(req.user._id, "twitter", function(err) {
         res.redirect("/account");
     });
@@ -237,22 +241,22 @@ app.post('/twitter-unlink', function (req, res){
 
 // Redirect the user to GitHub for authentication.  When complete, GitHub
 // will redirect the user back to the application
-app.get('/github-login', passport.authenticate('github'));
-app.get('/github-link', passport.authenticate('github-link'));
+app.get('/oauth/github/login', passport.authenticate('github'));
+app.get('/oauth/github/link', passport.authenticate('github-link'));
 
 
 // GitHub will redirect the user to this URL after approval.
-app.get('/github-login-callback', 
-    passport.authenticate('github', { successRedirect: '/oauth-login-succeeded',
-                                       failureRedirect: '/oauth-login-failed' })
+app.get('/oauth/github/login/callback', 
+    passport.authenticate('github', { successRedirect: '/oauth/login-succeeded',
+                                       failureRedirect: '/oauth/login-failed' })
 );
 
-app.get('/github-link-callback', 
-    passport.authenticate('github-link', { successRedirect: '/oauth-login-succeeded',
-                                       failureRedirect: '/oauth-login-failed' })
+app.get('/oauth/github/link/callback', 
+    passport.authenticate('github-link', { successRedirect: '/oauth/login-succeeded',
+                                       failureRedirect: '/oauth/link-failed' })
 );
 
-app.post('/github-unlink', function (req, res){
+app.post('/oauth/github/unlink', function (req, res){
     db.unlinkOAuth(req.user._id, "gitHub", function(err) {
         res.redirect("/account");
     });
