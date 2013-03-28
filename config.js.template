@@ -1,0 +1,93 @@
+////////////////////////////////////////////////////////////////////////////////
+// template for config.js
+
+var baseUrl = "http://EXAMPLE.com";
+
+////////////////////////////////////////////////////////////////////////////////
+// twitter
+// you will get your key and secret and all these URLS when you create an app at 
+// https://dev.twitter.com/
+
+exports.twitterConsumerKey = "";
+exports.twitterConsumerSecret = "";
+exports.twitterRequestTokenUrl = "";
+exports.twitterAuthorizeUrl = "";
+exports.twitterAccessTokenUrl = "";
+
+// our callback urls are calculated
+exports.twitterCallbackUrl = baseUrl + "/oauth/twitter/login/callback";
+exports.twitterLinkCallbackUrl = baseUrl + "/oauth/twitter/link/callback";
+
+
+////////////////////////////////////////////////////////////////////////////////
+// github
+// log in to github and go to https://github.com/settings/applications to create
+// an application & get your id & secret.
+
+exports.gitHubClientId = "";
+exports.gitHubClientSecret = "";
+exports.gitHubCallbackUrl = baseUrl +  "/oauth/github/login/callback";
+exports.gitHubLinkCallbackUrl = baseUrl +  "/oauth/github/link/callback";
+
+
+////////////////////////////////////////////////////////////////////////////////
+// cookie secrets
+// random strings used to sign and encrypt the session cookie
+// handy command line command for generating keyboard-cat effect:
+// head -c 48 /dev/urandom | base64
+
+exports.cookieSecret = "5JQkv/hOyHW2jv21WZJhWAi8dzAHZGIy89SWeunx/eGNhQ6zengMCqY7+jSyChgM";
+exports.sessionSecret = "1oFAFPuMqMD0ZG6OYi6klri5IjF207zqtCxjZMgkMUyNWXoPdy8czEd2FvXXFjGa";
+                         
+
+////////////////////////////////////////////////////////////////////////////////
+// runtime binding
+
+exports.listenHost = null; // IP address as string, if defined will oevrride all else
+exports.listenPort = null; // port as int, if defined will override all else
+
+
+////////////////////////////////////////////////////////////////////////////////
+// database
+
+exports.dbUrl = "mongodb://username:password@hostname:port/database_name";
+
+
+////////////////////////////////////////////////////////////////////////////////
+// static caching
+exports.staticMaxAge = 24 * 3600 * 1000; // a day in ms
+
+
+////////////////////////////////////////////////////////////////////////////////
+// email
+// currently we're set up to use GMail only, so this'd better be a gmail account
+exports.smtpUsername = ""
+exports.smtpPassword = "";
+exports.emailChangeRequestUrl = baseUrl + "/email-verification/";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
