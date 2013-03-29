@@ -5,7 +5,7 @@
 
 var express = require('express')
     //, routes = require('./routes')
-    , db = require('./db')
+    , db = require('./lib/db')
     //, task = require('./routes/task')
     , http = require('http')
     , path = require('path')
