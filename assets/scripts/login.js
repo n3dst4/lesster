@@ -110,7 +110,7 @@ function displayUser(user) {
 function renderUser(user) {
     var username = (user.username ? renderFullUser :
         user.twitterId ? renderTwitterUser :
-        user.gitHubId ? renderGitHubUser :
+        user.githubId ? renderGitHubUser :
         $.noop)(user);
     return "<a href='/account'>" + username + "</a>";
 }
@@ -120,7 +120,7 @@ function renderTwitterUser (user) {
 }
 
 function renderGitHubUser (user) {
-    return user.gitHubUsername + " (GitHub)";
+    return user.githubUsername + " (GitHub)";
 }
 
 

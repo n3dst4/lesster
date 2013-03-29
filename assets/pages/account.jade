@@ -107,14 +107,14 @@ block account-body
 
 
     // GITHUBS
-    {{#if user.gitHubUsername}}
+    {{#if user.githubUsername}}
     form.form-horizontal#github-link-form.unlink(action='/oauth/github/unlink', method='POST')
         .control-group
             label.control-label GitHub
             .controls
                 label 
                     | Linked to GitHub account 
-                    a(href="http://github.com/{{user.gitHubUsername}}") {{user.gitHubUsername}}
+                    a(href="http://github.com/{{user.githubUsername}}") {{user.githubUsername}}
                 button.btn.btn-danger.unlink(type='submit') Unlink
     {{else}}
     form.oauth.form-horizontal#github-link-form.oauth(action='/oauth/github/link', method='GET')
@@ -130,7 +130,7 @@ block account-body
 block append scripts
     
     script(type='text/javascript')
-        var factors = {{count user.password user.twitterId user.gitHubId}};
+        var factors = {{count user.password user.twitterId user.githubId}};
         if (factors < 2) {
             $(function(){
                 $("form.unlink").on("submit", function(){

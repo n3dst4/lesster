@@ -6,6 +6,7 @@
 var express = require('express')
     //, routes = require('./routes')
     , db = require('./lib/db')
+    , OAuth = require("./lib/oauth.js").OAuthProvider
     //, task = require('./routes/task')
     , http = require('http')
     , path = require('path')
@@ -29,51 +30,15 @@ passport.use(new LocalStrategy(
     }
 ));
 
-passport.use("twitter", new TwitterStrategy({
-        consumerKey: config.twitterConsumerKey,
-        consumerSecret: config.twitterConsumerSecret,
-        callbackURL: config.twitterCallbackUrl
-    },
-    function(token, tokenSecret, profile, done) {
-        db.getUserFromOAuthProfile(profile, "twitter", done);
-    }
-));
+var twitterProvider = new OAuth("twitter", config.baseUrl, config.oAuthPath, TwitterStrategy, {
+    consumerKey: config.twitterConsumerKey,
+    consumerSecret: config.twitterConsumerSecret
+});
 
-passport.use("twitter-link", new TwitterStrategy({
-        consumerKey: config.twitterConsumerKey,
-        consumerSecret: config.twitterConsumerSecret,
-        callbackURL: config.twitterLinkCallbackUrl,
-        passReqToCallback: true
-    },
-    function(req, token, tokenSecret, profile, done) {
-        if (!req.user) {done(new Error("Not logged in")); return;}
-        db.addOAuthProfileToUser(req.user._id, profile, "twitter", done);
-    }
-));
-
-passport.use("github", new GitHubStrategy({
-        clientID: config.gitHubClientId,
-        clientSecret: config.gitHubClientSecret,
-        callbackURL: config.gitHubCallbackUrl
-    },
-    function(accessToken, refreshToken, profile, done) {
-        db.getUserFromOAuthProfile(profile, "gitHub", done);
-    }
-));
-
-
-passport.use("github-link", new GitHubStrategy({
-        clientID: config.gitHubClientId,
-        clientSecret: config.gitHubClientSecret,
-        callbackURL: config.gitHubLinkCallbackUrl,
-        passReqToCallback: true
-    },
-    function(req, token, tokenSecret, profile, done) {
-        if (!req.user) {done(new Error("Not logged in")); return;}
-        db.addOAuthProfileToUser(req.user._id, profile, "gitHub", done);
-    }
-));
-
+var gitHubProvider = new OAuth("github", config.baseUrl, config.oAuthPath, GitHubStrategy, {
+    clientID: config.gitHubClientId,
+    clientSecret: config.gitHubClientSecret
+});
 
 
 
@@ -213,54 +178,8 @@ app.get('/userdetails', function (req, res) {
 ////////////////////////////////////////////////////////////////////////////////
 // OAUTH STUFFS
 
-// Redirect the user to Twitter for authentication.  When complete, Twitter
-// will redirect the user back to the application
-app.get('/oauth/twitter/login', passport.authenticate('twitter'));
-app.get('/oauth/twitter/link', passport.authenticate('twitter-link'));
-
-// Twitter will redirect the user to this URL after approval.
-app.get('/oauth/twitter/login/callback', 
-    passport.authenticate('twitter', { successRedirect: '/oauth/login-succeeded',
-                                       failureRedirect: '/oauth/login-failed' })
-);
-
-app.get('/oauth/twitter/link/callback', 
-    passport.authenticate('twitter-link', { successRedirect: '/oauth/login-succeeded',
-                                       failureRedirect: '/oauth/link-failed' })
-);
-
-app.post('/oauth/twitter/unlink', function (req, res){
-    db.unlinkOAuth(req.user._id, "twitter", function(err) {
-        res.redirect("/account");
-    });
-});
-
-
-
-
-
-// Redirect the user to GitHub for authentication.  When complete, GitHub
-// will redirect the user back to the application
-app.get('/oauth/github/login', passport.authenticate('github'));
-app.get('/oauth/github/link', passport.authenticate('github-link'));
-
-
-// GitHub will redirect the user to this URL after approval.
-app.get('/oauth/github/login/callback', 
-    passport.authenticate('github', { successRedirect: '/oauth/login-succeeded',
-                                       failureRedirect: '/oauth/login-failed' })
-);
-
-app.get('/oauth/github/link/callback', 
-    passport.authenticate('github-link', { successRedirect: '/oauth/login-succeeded',
-                                       failureRedirect: '/oauth/link-failed' })
-);
-
-app.post('/oauth/github/unlink', function (req, res){
-    db.unlinkOAuth(req.user._id, "gitHub", function(err) {
-        res.redirect("/account");
-    });
-});
+twitterProvider.addRoutes(app);
+gitHubProvider.addRoutes(app);
 
 
 
