@@ -30,12 +30,12 @@ passport.use(new LocalStrategy(
     }
 ));
 
-var twitterProvider = new OAuth("twitter", config.baseUrl, config.oAuthPath, TwitterStrategy, {
+var twitterProvider = new OAuth("twitter", config.baseUrl, {}, TwitterStrategy, {
     consumerKey: config.twitterConsumerKey,
     consumerSecret: config.twitterConsumerSecret
 });
 
-var gitHubProvider = new OAuth("github", config.baseUrl, config.oAuthPath, GitHubStrategy, {
+var gitHubProvider = new OAuth("github", config.baseUrl, {}, GitHubStrategy, {
     clientID: config.gitHubClientId,
     clientSecret: config.gitHubClientSecret
 });
@@ -132,18 +132,24 @@ app.get('/', function(req, res) {
     res.sendfile("static/pages/index.html");
 });
 
-app.get('/oauth/login-succeeded', function(req, res) {
-    res.sendfile("static/oauth-login-succeeded.html");
+// routes for oauth sucess and failure
+app.get('/oauth/login/success', function(req, res) {
+    res.sendfile("static/oauth-login-success.html");
 });
 
-app.get('/oauth/login-failed', function(req, res) {
-    res.sendfile("static/oauth-login-failed.html");
+app.get('/oauth/link/success', function(req, res) {
+    res.sendfile("static/oauth-login-success.html");
 });
 
-app.get('/oauth/link-failed', function(req, res) {
-    res.sendfile("static/oauth-link-failed.html");
+app.get('/oauth/login/failure', function(req, res) {
+    res.sendfile("static/oauth-login-failure.html");
 });
 
+app.get('/oauth/link/failure', function(req, res) {
+    res.sendfile("static/oauth-link-failure.html");
+});
+
+// email verification
 app.get('/email-verification-succeeded', function(req, res) {
     res.sendfile("static/pages/email-verification-succeeded.html");
 });
