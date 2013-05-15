@@ -18,6 +18,7 @@ var express = require('express')
     , config = require("./config")
     , _ = require("underscore");
 
+var userAgent = "Lesster/0.0";
 
 ////////////////////////////////////////////////////////////////////////////////
 // AUTHENTICATION SETUP
@@ -37,7 +38,8 @@ var twitterProvider = new OAuth("twitter", config.baseUrl, {}, TwitterStrategy, 
 
 var gitHubProvider = new OAuth("github", config.baseUrl, {}, GitHubStrategy, {
     clientID: config.gitHubClientId,
-    clientSecret: config.gitHubClientSecret
+    clientSecret: config.gitHubClientSecret,
+    customHeaders: {"User-Agent" : userAgent}
 });
 
 
@@ -70,7 +72,7 @@ app.configure('development', function(){
 
 app.configure(function(){
     app.set('port', config.listenPort || process.env.PORT || 3000);
-    app.set('host', config.listenHost || process.env.HOST || "0.0.0.0");
+    app.set('host', config.listenHost || process.env.IP || "0.0.0.0");
     app.set('views', __dirname + '/views');
     app.set('view engine', 'hbs');
     
@@ -272,7 +274,12 @@ app.get("/email-verification/:key", function(req, res) {
 ////////////////////////////////////////////////////////////////////////////////
 // LAUNCH MOON MSSION
 
-//console.log("About to launch listener on " + app.get("host") + ":" + app.get('port'));
+console.log("About to launch listener on " + app.get("host") + ":" + app.get('port'));
+console.log("Config: " + config.listenHost + ":" + config.listenPort);
+console.log("Env: " + process.env.IP + ":" + process.env.PORT);
+
+
+
 http.createServer(app).listen(app.get('port'), app.get('host'), function(){
   console.log("Express server listening on " + app.get("host") + ":" + app.get('port'));
 });
