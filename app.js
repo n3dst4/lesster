@@ -198,6 +198,7 @@ gitHubProvider.addRoutes(app);
 app.get("/account", function (req, res) {
     if (req.user) {
         var user = _.clone(req.user);
+        //var pending = db.getPendingEmailChangeRequestsExist(req.user._id);
         //console.log(JSON.stringify(user));
         //user.password = user.password2 = null;
         res.render("account", {
